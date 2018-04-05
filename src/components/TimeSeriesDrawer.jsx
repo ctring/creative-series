@@ -8,30 +8,40 @@ export default class TimeSeriesDrawer extends Component {
     offset: [] 
   }
 
+  padding = 10
+
   middleY() {
     return this.props.height / 2;
   }
 
-  renderLines(ys) {
-    let { width } = this.props;
+  ys() {
+    let length = this.props.length || 5;
+    return this.props.series || Array(length && 5).fill(0);
+  }
+
+  space() {
+    let { width } = this.props;    
+    return width / (this.ys().length - 1) - 2 * this.padding;
+  }
+
+  renderLines() {
     let { offset } = this.state;
-    let space = width / (ys.length - 1);
     var points = [];
-    ys.forEach((y, i) => {
-      points.push(i * space);
+    this.ys().forEach((y, i) => {
+      points.push(this.padding + i * this.space());
       points.push(this.middleY() - y + (offset[i] || 0));
     });
     return <Line points={points} stroke='red' />
   }
 
-  renderPoints(ys) {
-    let { width, height, pointRadius } = this.props;
-    let space = width / (ys.length - 1);
-    return ys.map((y, i) => {
+  renderPoints() {
+    let { height, pointRadius } = this.props;
+    let space = this.space();
+    return this.ys().map((y, i) => {
       let { offset } = this.state;
       let trueY = this.middleY() - y;
       return <Circle 
-        x={i * space}
+        x={this.padding + i * space}
         y={trueY + (offset[i] || 0)}
         radius={pointRadius || 5}
         fill='black'
@@ -55,15 +65,12 @@ export default class TimeSeriesDrawer extends Component {
   }
 
   render() {
-    let { width, height } = this.props;
-
-    let length = this.props.length || 5;
-    let ys = this.props.series || Array(length && 5).fill(0);
+    let { width, height } = this.props;   
     return (
       <Stage width={width} height={height}>
         <Layer>
-          {this.renderLines(ys)}
-          {this.renderPoints(ys)}
+          {this.renderLines()}
+          {this.renderPoints()}
         </Layer>
       </Stage>
     )
