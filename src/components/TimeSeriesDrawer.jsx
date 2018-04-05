@@ -55,7 +55,7 @@ export default class TimeSeriesDrawer extends Component {
         onMouseMove={(e) => {
           if (e.evt && e.evt.buttons === 1) {
             var newOffset = offset.slice();
-            let newY = e.evt.clientY;
+            let newY = e.evt.layerY;
             newOffset[i] = newY - trueY;
             this.setState({ 'offset': newOffset});
           }
