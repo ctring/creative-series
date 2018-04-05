@@ -4,6 +4,10 @@ import { Stage, Layer, Line, Circle } from 'react-konva';
 
 export default class TimeSeriesDrawer extends Component {
 
+  state = {
+    offset: [] 
+  }
+
   middleY() {
     return this.props.height / 2;
   }
@@ -17,30 +21,44 @@ export default class TimeSeriesDrawer extends Component {
       points.push(this.middleY() - y);
     });
     return <Line points={points} stroke='red' />
-    
   }
 
   renderPoints(ys) {
-    let { width, pointRadius } = this.props;
+    let { width, height, pointRadius } = this.props;
     let space = width / (ys.length - 1);
-
-    return ys.map((y, i) => (
-        <Circle 
-          x={i * space}
-          y={this.middleY() - y}
-          radius={pointRadius || 5}
-          fill='black'
-          key={i}
-        />
-    ))
+    return ys.map((y, i) => {
+      let { offset } = this.state;
+      let trueY = this.middleY() - y;
+      return <Circle 
+        x={i * space}
+        y={trueY + (offset[i] || 0)}
+        radius={pointRadius || 5}
+        fill='black'
+        key={i}
+        hitFunc={function hitFunc(context) {
+          context.beginPath();
+          context.rect(-space/2, -trueY, space, height);
+          context.closePath();
+          context.fillStrokeShape(this);
+        }}
+        onMouseMove={(e) => {
+          if (e.evt && e.evt.buttons === 1) {
+            var newOffset = offset.slice();
+            let newY = e.evt.clientY;
+            newOffset[i] = newY - trueY;
+            this.setState({ 'offset': newOffset});
+          }
+        }}
+      />
+    })
   }
 
   render() {
     let { width, height } = this.props;
 
     let length = this.props.length || 5;
-    let ys = this.props.points || Array(length && 5).fill(0);
-
+    let { offset } = this.state;    
+    let ys = this.props.series || Array(length && 5).fill(0);
     return (
       <Stage width={width} height={height}>
         <Layer>
@@ -57,6 +75,6 @@ TimeSeriesDrawer.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   length: PropTypes.number,
-  points: PropTypes.array,
+  series: PropTypes.array,
   pointRadius: PropTypes.number
 }
