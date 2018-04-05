@@ -14,11 +14,12 @@ export default class TimeSeriesDrawer extends Component {
 
   renderLines(ys) {
     let { width } = this.props;
+    let { offset } = this.state;
     let space = width / (ys.length - 1);
     var points = [];
     ys.forEach((y, i) => {
       points.push(i * space);
-      points.push(this.middleY() - y);
+      points.push(this.middleY() - y + (offset[i] || 0));
     });
     return <Line points={points} stroke='red' />
   }
@@ -57,7 +58,6 @@ export default class TimeSeriesDrawer extends Component {
     let { width, height } = this.props;
 
     let length = this.props.length || 5;
-    let { offset } = this.state;    
     let ys = this.props.series || Array(length && 5).fill(0);
     return (
       <Stage width={width} height={height}>
