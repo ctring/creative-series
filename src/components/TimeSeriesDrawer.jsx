@@ -18,8 +18,8 @@ export default class TimeSeriesDrawer extends Component {
 
   // Series in user coordinate system
   userSeries() {
-    let length = this.props.length || 10;
-    return this.props.series || Array(length).fill(0);
+    const { series, length } = this.props;
+    return series.length ? series : Array(length || 10).fill(0);
   }
 
   // Y scale from user
@@ -51,7 +51,7 @@ export default class TimeSeriesDrawer extends Component {
   }
 
   renderLines() {
-    let { screenOffset } = this.state;
+    const { screenOffset } = this.state;
     let screenSeries = this.screenSeries();
     let screenX = this.screenX();
     let points = [];
@@ -63,8 +63,8 @@ export default class TimeSeriesDrawer extends Component {
   }
 
   renderPoints() {
-    let { pointRadius } = this.props;
-    let { screenOffset } = this.state;
+    const { pointRadius } = this.props;
+    const { screenOffset } = this.state;
     let screenSeries = this.screenSeries();
     let screenX = this.screenX();
     return screenSeries.map((y, i) => (
@@ -79,8 +79,8 @@ export default class TimeSeriesDrawer extends Component {
   }
 
   render() {
-    let { width, height } = this.props;
-    let { screenOffset, userOffset } = this.state;
+    const { width, height } = this.props;
+    const { screenOffset, userOffset } = this.state;
 
     let space = this.space();
     let screenSeries = this.screenSeries();

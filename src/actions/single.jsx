@@ -1,8 +1,8 @@
-import { SET_INPUT_SERIES } from './actionTypes';
+import { SET_CURRENT_SERIES } from './actionTypes';
 
-const setInputSeries = (series) => ({
-  type: SET_INPUT_SERIES,
-  series
+const setCurrentSeries = (inputSeries) => ({
+  type: SET_CURRENT_SERIES,
+  inputSeries
 });
 
-export { setInputSeries };
+export { setCurrentSeries };

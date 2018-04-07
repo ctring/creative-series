@@ -10,7 +10,6 @@ import App from './App';
 import reducer from './reducers'
 import registerServiceWorker from './registerServiceWorker';
 
-
 const store = createStore(
 	reducer,
 	applyMiddleware(thunk, logger)

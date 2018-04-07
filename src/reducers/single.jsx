@@ -1,13 +1,15 @@
-import { SET_INPUT_SERIES } from '../actions/actionTypes';
+import { SET_CURRENT_SERIES } from '../actions/actionTypes';
 
 export default (
   state = {
-      inputSeries: []
+    currentSeries: []
   },
   action) => {
   switch (action.type) {
-    case SET_INPUT_SERIES:
-      return Object.assign({}, state, { inputSeries: action.series });
+    case SET_CURRENT_SERIES:
+      return Object.assign({}, state, {
+        currentSeries: action.inputSeries
+      });
     default:
       return state;
   }

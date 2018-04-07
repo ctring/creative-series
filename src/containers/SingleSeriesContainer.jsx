@@ -1,25 +1,53 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Button } from 'semantic-ui-react';
+import { Grid, Form, Message } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
 import TimeSeriesDrawer from '../components/TimeSeriesDrawer';
-import { setInputSeries } from '../actions/single';
+import { setCurrentSeries } from '../actions/single';
 
 class SingleSeriesContainer extends Component {
+  state = {
+    inputSeriesStr: '',
+    errorMessage: '',
+    drawerKey: 0
+  }
+
+  onSetSeriesClick = () => {
+    const { inputSeriesStr, drawerKey } = this.state;
+    let inputSeries = inputSeriesStr.split(',').map((x) => (parseFloat(x, 10)));
+    if (inputSeries.findIndex(isNaN) !== -1) {
+      this.setState({ errorMessage: 'Series contains a non-number value' });
+    }
+    else {
+      this.props.setCurrentSeries(inputSeries);
+      this.setState({ errorMessage: '', drawerKey: drawerKey + 1 });
+    }
+  }
+
   render() {
-    return (     
+    const { currentSeries } = this.props;
+    const { errorMessage, drawerKey } = this.state;
+    return (
       <Grid>
         <Grid.Row>
-          <TimeSeriesDrawer width={1000} height={400} length={50}/>
+          <TimeSeriesDrawer key={drawerKey} width={1000} height={400} series={currentSeries} />
         </Grid.Row>
         <Grid.Row columns={2}>
           <Grid.Column>
-            <div>
-              <textarea cols={72} rows={6} style={{resize: 'none'}}
-                placeholder='Enter a series of number, separated by commas'/>
-            </div>
-            <Button>Set Time Series</Button>
+            <Form error={errorMessage !== ''}>
+              <Form.TextArea
+                label='Input series'
+                placeholder='Enter a series of number, separated by commas'
+                onChange={(e, txtArea) => {
+                  this.setState({ inputSeriesStr: txtArea.value });
+                }}
+              />
+              <Message error header='Invalid series' content={errorMessage} />
+              <Form.Button onClick={this.onSetSeriesClick}>
+                Set Series
+              </Form.Button>
+            </Form>
           </Grid.Column>
           <Grid.Column>
 
@@ -31,15 +59,18 @@ class SingleSeriesContainer extends Component {
 }
 
 SingleSeriesContainer.propTypes = {
-  inputSeries: PropTypes.array,
+  currentSeries: PropTypes.array,
+  setCurrentSeries: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
-  inputSeries: state.single.inputSeries,
+  currentSeries: state.single.currentSeries,
 });
 
 const mapDispatchToProps = dispatch => ({
-  setInputSeries
+  setCurrentSeries(inputSeries) {
+    dispatch(setCurrentSeries(inputSeries));
+  }
 });
 
 export default connect(
