@@ -1,0 +1,1 @@
+export const SET_INPUT_SERIES = 'SET_INPUT_SERIES';

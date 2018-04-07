@@ -54,7 +54,7 @@ export default class TimeSeriesDrawer extends Component {
     let { screenOffset } = this.state;
     let screenSeries = this.screenSeries();
     let screenX = this.screenX();
-    var points = [];
+    let points = [];
     screenSeries.forEach((y, i) => {
       points.push(screenX[i] + this.padding);
       points.push(y + (screenOffset[i] || 0));
@@ -91,8 +91,8 @@ export default class TimeSeriesDrawer extends Component {
       if (e.evt && e.evt.buttons === 1) {
         let index = Math.floor((e.evt.layerX - this.padding) / space);
 
-        var newScreenOffset = screenOffset.slice();
-        var newUserOffset = userOffset.slice();
+        let newScreenOffset = screenOffset.slice();
+        let newUserOffset = userOffset.slice();
 
         newScreenOffset[index] = e.evt.layerY - screenSeries[index];
         newUserOffset[index] = scale(newScreenOffset[index], 0, width, userScaleY[1], userScaleY[0]);
