@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Form, Message } from 'semantic-ui-react';
+import { Grid, Form, Message, Input } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
 import TimeSeriesDrawer from '../components/TimeSeriesDrawer';
@@ -10,14 +10,18 @@ class SingleSeriesContainer extends Component {
   state = {
     inputSeriesStr: '',
     errorMessage: '',
-    drawerKey: 0
+    drawerKey: 0,
+    lowY: -1,
+    highY: 1,
   }
 
-  onSetSeriesClick = () => {
+  onChange = (e, { name, value }) => { this.setState({ [name]: value }); }
+
+  onSeriesSubmit = () => {
     const { inputSeriesStr, drawerKey } = this.state;
     let inputSeries = inputSeriesStr.split(',').map((x) => (parseFloat(x, 10)));
     if (inputSeries.findIndex(isNaN) !== -1) {
-      this.setState({ errorMessage: 'Series contains a non-number value' });
+      this.setState({ errorMessage: 'Series must only contain numeric values' });
     }
     else {
       this.props.setCurrentSeries(inputSeries);
@@ -25,29 +29,55 @@ class SingleSeriesContainer extends Component {
     }
   }
 
+  renderInputForm = () => {
+    const { errorMessage, lowY, highY } = this.state;
+    return (
+      <Form error={errorMessage !== ''} onSubmit={this.onSeriesSubmit}>
+        <Form.Group widths='equal' label='Range of y-axis'>
+          <Form.Field 
+            type='number'
+            control={Input}
+            name='lowY'
+            step={0.1}
+            value={lowY}
+            onChange={this.onChange}
+            label='Low Y'/>
+          <Form.Field
+            type='number' 
+            control={Input}
+            name='highY'
+            step={0.1}
+            value={highY}
+            onChange={this.onChange}
+            label='High Y'/>
+        </Form.Group>
+        <Form.TextArea
+          label='Input series'
+          name='inputSeriesStr'
+          placeholder='Enter a series of number, separated by commas'
+          onChange={this.onChange}
+        />
+        <Message error header='Invalid series' content={errorMessage} />
+        <Form.Button content='Set series' />
+    </Form>);
+  }
+
   render() {
     const { currentSeries } = this.props;
-    const { errorMessage, drawerKey } = this.state;
+    const { drawerKey, lowY, highY } = this.state;
     return (
-      <Grid>
-        <Grid.Row>
-          <TimeSeriesDrawer key={drawerKey} width={1000} height={400} series={currentSeries} />
+      <Grid celled>
+        <Grid.Row centered>
+          <TimeSeriesDrawer
+            key={drawerKey}
+            width={1200}
+            height={400}
+            series={currentSeries}
+            scaleY={[lowY, highY]}/>
         </Grid.Row>
         <Grid.Row columns={2}>
           <Grid.Column>
-            <Form error={errorMessage !== ''}>
-              <Form.TextArea
-                label='Input series'
-                placeholder='Enter a series of number, separated by commas'
-                onChange={(e, txtArea) => {
-                  this.setState({ inputSeriesStr: txtArea.value });
-                }}
-              />
-              <Message error header='Invalid series' content={errorMessage} />
-              <Form.Button onClick={this.onSetSeriesClick}>
-                Set Series
-              </Form.Button>
-            </Form>
+            {this.renderInputForm()}
           </Grid.Column>
           <Grid.Column>
 
