@@ -1,1 +1,0 @@
-export const SET_CURRENT_SERIES = 'SET_CURRENT_SERIES';

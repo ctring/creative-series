@@ -1,17 +1,15 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { Grid, Form, Message, Input } from 'semantic-ui-react';
-import { connect } from 'react-redux';
 
 import TimeSeriesDrawer from '../components/TimeSeriesDrawer';
 import CopiableTextOutput from '../components/CopiableTextOutput';
-import { setCurrentSeries } from '../actions/single';
 
 class SingleSeriesContainer extends Component {
   state = {
-    inputSeriesStr: '',
+    currentSeries: Array(10).fill(0),
     errorMessage: '',
     drawerKey: 0,
+    inputSeriesStr: '',
     lowY: -1,
     highY: 1,
   }
@@ -22,11 +20,21 @@ class SingleSeriesContainer extends Component {
     const { inputSeriesStr, drawerKey } = this.state;
     let inputSeries = inputSeriesStr.split(',').map((x) => (parseFloat(x, 10)));
     if (inputSeries.findIndex(isNaN) !== -1) {
-      this.setState({ errorMessage: 'Series must only contain numeric values' });
+      this.setState({ 
+        errorMessage: 'Series must only contain numeric values' 
+      });
     }
     else {
-      this.props.setCurrentSeries(inputSeries);
-      this.setState({ errorMessage: '', drawerKey: drawerKey + 1 });
+      const min = Math.min(...inputSeries);
+      const max = Math.max(...inputSeries);
+      const padding = max === min ? 1 : (max - min) * 0.1;
+      this.setState({ 
+        currentSeries: inputSeries,
+        errorMessage: '', 
+        drawerKey: drawerKey + 1,
+        lowY: min - padding,
+        highY: max + padding,
+      });
     }
   }
 
@@ -65,9 +73,8 @@ class SingleSeriesContainer extends Component {
   }
 
   render() {
-    const { currentSeries } = this.props;
-    const { drawerKey, lowY, highY } = this.state;
-    console.log(currentSeries.join(', '));
+    const { currentSeries, drawerKey, lowY, highY } = this.state;
+
     return (
       <Grid celled>
         <Grid.Row centered>
@@ -76,7 +83,7 @@ class SingleSeriesContainer extends Component {
             width={1200}
             height={400}
             series={currentSeries}
-            scaleY={[lowY, highY]}/>
+            rangeY={[lowY, highY]}/>
         </Grid.Row>
         <Grid.Row columns={2}>
           <Grid.Column>
@@ -91,23 +98,5 @@ class SingleSeriesContainer extends Component {
   }
 }
 
-SingleSeriesContainer.propTypes = {
-  currentSeries: PropTypes.array.isRequired,
-  setCurrentSeries: PropTypes.func.isRequired,
-};
-
-const mapStateToProps = state => ({
-  currentSeries: state.single.currentSeries,
-});
-
-const mapDispatchToProps = dispatch => ({
-  setCurrentSeries(inputSeries) {
-    dispatch(setCurrentSeries(inputSeries));
-  }
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SingleSeriesContainer);
+export default SingleSeriesContainer;
 

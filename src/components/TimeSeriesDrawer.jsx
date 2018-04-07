@@ -16,35 +16,36 @@ export default class TimeSeriesDrawer extends Component {
 
   padding = 10;
 
-  // Series in user coordinate system
-  userSeries() {
-    const { series, length } = this.props;
-    return series.length ? series : Array(length || 10).fill(0);
-  }
-
   // Y scale from user
-  userScaleY() {
-    return this.props.scaleY || [-1, 1];
+  userRangeY() {
+    if (this.props.rangeY) {
+      return this.props.rangeY;
+    }
+    const userSeries = this.props.series;
+    const min = Math.min(...userSeries);
+    const max = Math.max(...userSeries);
+    const padding = max === min ? 1 : (max - min) * 0.1;
+    return [min - padding, max + padding];
   }
 
   // Series in screen coordinate system
   screenSeries() {
-    let userSeries = this.userSeries();
-    let userScaleY = this.userScaleY();
+    const userSeries = this.props.series;
+    const userRangeY = this.userRangeY();
     return userSeries.map((y, i) => (
-      scale(y, userScaleY[0], userScaleY[1], this.props.height, 0)
+      scale(y, userRangeY[0], userRangeY[1], this.props.height, 0)
     ));
   }
 
   space() {
-    let userSeries = this.userSeries();
+    const userSeries = this.props.series;
     return (this.props.width - 2 * this.padding) / (userSeries.length - 1);
   }
 
   // X-coordinate in screen coordinate system
   screenX() {
-    let userSeries = this.userSeries();
-    let space = this.space();
+    const userSeries = this.props.series;
+    const space = this.space();
     return userSeries.map((_, i) => (
       this.padding + i * space
     ));
@@ -84,7 +85,7 @@ export default class TimeSeriesDrawer extends Component {
 
     let space = this.space();
     let screenSeries = this.screenSeries();
-    let userScaleY = this.userScaleY();
+    let userRangeY = this.userRangeY();
 
     // Function for updating the offsets of the points
     let offsetUpdateFunc = (e) => {
@@ -95,7 +96,7 @@ export default class TimeSeriesDrawer extends Component {
         let newUserOffset = userOffset.slice();
 
         newScreenOffset[index] = e.evt.layerY - screenSeries[index];
-        newUserOffset[index] = scale(newScreenOffset[index], 0, width, userScaleY[1], userScaleY[0]);
+        newUserOffset[index] = scale(newScreenOffset[index], 0, width, userRangeY[1], userRangeY[0]);
 
         onOffsetChange && onOffsetChange(newUserOffset);
 
@@ -119,9 +120,8 @@ export default class TimeSeriesDrawer extends Component {
 TimeSeriesDrawer.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
-  length: PropTypes.number,
-  series: PropTypes.array,
-  scaleY: PropTypes.array,
+  series: PropTypes.array.isRequired,
+  rangeY: PropTypes.array,
   pointRadius: PropTypes.number,
   onOffsetChange: PropTypes.func,
 }
