@@ -79,7 +79,7 @@ export default class TimeSeriesDrawer extends Component {
   }
 
   render() {
-    const { width, height } = this.props;
+    const { width, height, onOffsetChange } = this.props;
     const { screenOffset, userOffset } = this.state;
 
     let space = this.space();
@@ -96,6 +96,8 @@ export default class TimeSeriesDrawer extends Component {
 
         newScreenOffset[index] = e.evt.layerY - screenSeries[index];
         newUserOffset[index] = scale(newScreenOffset[index], 0, width, userScaleY[1], userScaleY[0]);
+
+        onOffsetChange && onOffsetChange(newUserOffset);
 
         this.setState({ screenOffset: newScreenOffset, userOffset: newUserOffset });
       }
@@ -120,5 +122,6 @@ TimeSeriesDrawer.propTypes = {
   length: PropTypes.number,
   series: PropTypes.array,
   scaleY: PropTypes.array,
-  pointRadius: PropTypes.number
+  pointRadius: PropTypes.number,
+  onOffsetChange: PropTypes.func,
 }

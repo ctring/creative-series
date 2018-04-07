@@ -2,7 +2,7 @@ import { SET_CURRENT_SERIES } from '../actions/actionTypes';
 
 export default (
   state = {
-    currentSeries: []
+    currentSeries: Array(10).fill(0)
   },
   action) => {
   switch (action.type) {

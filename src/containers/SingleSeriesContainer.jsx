@@ -4,6 +4,7 @@ import { Grid, Form, Message, Input } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
 import TimeSeriesDrawer from '../components/TimeSeriesDrawer';
+import CopiableTextOutput from '../components/CopiableTextOutput';
 import { setCurrentSeries } from '../actions/single';
 
 class SingleSeriesContainer extends Component {
@@ -33,6 +34,7 @@ class SingleSeriesContainer extends Component {
     const { errorMessage, lowY, highY } = this.state;
     return (
       <Form error={errorMessage !== ''} onSubmit={this.onSeriesSubmit}>
+        <Message error header='Invalid series' content={errorMessage} />      
         <Form.Group widths='equal' label='Range of y-axis'>
           <Form.Field 
             type='number'
@@ -54,10 +56,10 @@ class SingleSeriesContainer extends Component {
         <Form.TextArea
           label='Input series'
           name='inputSeriesStr'
-          placeholder='Enter a series of number, separated by commas'
+          placeholder='Enter a series of number separated by commas.'
+          autoHeight
           onChange={this.onChange}
         />
-        <Message error header='Invalid series' content={errorMessage} />
         <Form.Button content='Set series' />
     </Form>);
   }
@@ -65,6 +67,7 @@ class SingleSeriesContainer extends Component {
   render() {
     const { currentSeries } = this.props;
     const { drawerKey, lowY, highY } = this.state;
+    console.log(currentSeries.join(', '));
     return (
       <Grid celled>
         <Grid.Row centered>
@@ -80,7 +83,7 @@ class SingleSeriesContainer extends Component {
             {this.renderInputForm()}
           </Grid.Column>
           <Grid.Column>
-
+            <CopiableTextOutput content={currentSeries.join(', ')} />
           </Grid.Column>
         </Grid.Row>
       </Grid>
@@ -89,7 +92,7 @@ class SingleSeriesContainer extends Component {
 }
 
 SingleSeriesContainer.propTypes = {
-  currentSeries: PropTypes.array,
+  currentSeries: PropTypes.array.isRequired,
   setCurrentSeries: PropTypes.func.isRequired,
 };
 
