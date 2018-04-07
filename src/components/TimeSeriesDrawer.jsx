@@ -14,28 +14,32 @@ export default class TimeSeriesDrawer extends Component {
     return this.props.height / 2;
   }
 
+  length() {
+    return this.props.length || 5;
+  }
+
   ys() {
-    let length = this.props.length || 5;
-    return this.props.series || Array(length && 5).fill(0);
+    return this.props.series || Array(this.length()).fill(0);
   }
 
   space() {
-    let { width } = this.props;    
-    return width / (this.ys().length - 1) - 2 * this.padding;
+    let { width } = this.props; 
+    return (width - 2 * this.padding) / (this.length() - 1);
   }
 
   renderLines() {
     let { offset } = this.state;
     var points = [];
+    let space = this.space();
     this.ys().forEach((y, i) => {
-      points.push(this.padding + i * this.space());
+      points.push(this.padding + i * space);
       points.push(this.middleY() - y + (offset[i] || 0));
     });
     return <Line points={points} stroke='red' />
   }
 
   renderPoints() {
-    let { height, pointRadius } = this.props;
+    let { pointRadius } = this.props;
     let space = this.space();
     return this.ys().map((y, i) => {
       let { offset } = this.state;
@@ -46,28 +50,33 @@ export default class TimeSeriesDrawer extends Component {
         radius={pointRadius || 5}
         fill='black'
         key={i}
-        hitFunc={function hitFunc(context) {
-          context.beginPath();
-          context.rect(-space/2, -trueY, space, height);
-          context.closePath();
-          context.fillStrokeShape(this);
-        }}
-        onMouseMove={(e) => {
-          if (e.evt && e.evt.buttons === 1) {
-            var newOffset = offset.slice();
-            let newY = e.evt.layerY;
-            newOffset[i] = newY - trueY;
-            this.setState({ 'offset': newOffset});
-          }
-        }}
       />
     })
   }
 
   render() {
-    let { width, height } = this.props;   
+    let { width, height } = this.props;
+    let { offset } = this.state;
+
+    let space = this.space();
+    let middleY = this.middleY();
+    let ys = this.ys();
+
+    let offsetUpdateFunc = (e) => {
+      if (e.evt && e.evt.buttons === 1) {
+        let index = Math.floor((e.evt.layerX - this.padding)/space);
+        var newOffset = offset.slice();
+        let newY = e.evt.layerY;
+        let trueY = middleY - ys[index];
+        newOffset[index] = newY - trueY;
+        this.setState({ 'offset': newOffset});
+      }
+    };
+
     return (
-      <Stage width={width} height={height}>
+      <Stage width={width} height={height}
+        onMouseMove={offsetUpdateFunc}
+        onMouseDown={offsetUpdateFunc}>
         <Layer>
           {this.renderLines()}
           {this.renderPoints()}
@@ -76,7 +85,6 @@ export default class TimeSeriesDrawer extends Component {
     )
   }
 }
-
 
 TimeSeriesDrawer.propTypes = {
   width: PropTypes.number.isRequired,
