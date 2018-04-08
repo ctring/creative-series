@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Grid, Form, Message } from 'semantic-ui-react';
 import ReactResizeDetector from 'react-resize-detector';
 
-import SeriesDrawer from './components/SeriesDrawer';
+import SeriesDrawer from './drawers/DynamicTimeWarpingDrawer';
 import CopiableTextOutput from './components/CopiableTextOutput';
 import GraphControls from './components/GraphControls';
 
