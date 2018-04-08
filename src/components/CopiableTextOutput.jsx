@@ -6,7 +6,14 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 class CopiableTextOutput extends Component {
 
   state = {
+    copiedContent: '',
     copied: false,
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    return {
+      copied: prevState.copiedContent === nextProps.content
+    }
   }
 
   render() {
@@ -27,7 +34,10 @@ class CopiableTextOutput extends Component {
             icon='clipboard'
             content='Copy to clipboard'
             onClick={() => {
-              this.setState({ copied: true })
+              this.setState({
+                copiedContent: content,
+                copied: true
+              })
             }} />
         </CopyToClipboard>
       </div>
