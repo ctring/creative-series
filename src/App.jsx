@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import SingleSeriesContainer from './containers/SingleSeriesContainer'
+import SingleSeriesPane from './SingleSeriesPane'
 
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <SingleSeriesContainer />
+        <SingleSeriesPane />
       </div>
     );
   }
