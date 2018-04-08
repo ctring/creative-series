@@ -19,6 +19,8 @@ class DynamicTimeWarpingPane extends Component {
       currentSeries2: initialSeries,
       offset1: [],
       offset2: [],
+      focusSeries: 0,
+
       drawerKey: 0,
       drawerWidth: 1000,
       drawerHeight: 400,
@@ -120,7 +122,7 @@ class DynamicTimeWarpingPane extends Component {
   render() {
     const {
       drawerKey, drawerWidth, drawerHeight,
-      currentSeries1, currentSeries2,
+      currentSeries1, currentSeries2, focusSeries,
       offset1, offset2,
       lowY, highY, showOriginal
     } = this.state;
@@ -143,7 +145,9 @@ class DynamicTimeWarpingPane extends Component {
                 highY={highY}
                 showOriginal={showOriginal}
                 onChange={this.onChange}
-                onChangeCheckbox={this.onChangeCheckbox} />
+                onChangeCheckbox={this.onChangeCheckbox}
+                numberOfSeries={2}
+                focusSeries={focusSeries} />
             </Grid.Column>
             <Grid.Column width={14} >
               <div style={{ width: '100%', height: '100%' }} ref={this.drawerContainer}>
@@ -154,7 +158,8 @@ class DynamicTimeWarpingPane extends Component {
                   series={[currentSeries1, currentSeries2]}
                   rangeY={[lowY, highY]}
                   showOriginal={showOriginal}
-                  onOffsetChange={this.onOffsetChange} />
+                  onOffsetChange={this.onOffsetChange}
+                  focusSeries={focusSeries} />
               </div>
             </Grid.Column>
 

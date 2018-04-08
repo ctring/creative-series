@@ -20,7 +20,6 @@ export default class DynamicTimeWarpingDrawer extends Component {
   state = {
     userOffset: [],   // 2-D array
     screenOffset: [], // 2-D array
-    focusSeries: 0,
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -49,12 +48,12 @@ export default class DynamicTimeWarpingDrawer extends Component {
       onOffsetChange,
       showOriginal,
       rangeY,
+      focusSeries,      
     } = this.props;
 
     const {
       screenOffset,
       userOffset,
-      focusSeries,
     } = this.state;
 
     const space = series.map((s) => computeSpace(s, width));
