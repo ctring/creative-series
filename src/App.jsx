@@ -8,17 +8,13 @@ const panes = [
   { 
     menuItem: 'Single Series', 
     render: () => (
-      <Tab.Pane>
-        <SingleSeriesPane />
-      </Tab.Pane>
+      <SingleSeriesPane />
     )
   },
   { 
     menuItem: 'Dynamic Time Warping',
     render: () => (
-      <Tab.Pane>      
-        <DynamicTimeWarpingPane />
-      </Tab.Pane>
+      <DynamicTimeWarpingPane />
     ),
   },
 ];

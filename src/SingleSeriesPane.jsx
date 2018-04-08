@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Grid, Form, Message } from 'semantic-ui-react';
 import ReactResizeDetector from 'react-resize-detector';
 
-import TimeSeriesDrawer from './components/TimeSeriesDrawer';
+import SeriesDrawer from './components/SeriesDrawer';
 import CopiableTextOutput from './components/CopiableTextOutput';
 import GraphControls from './components/GraphControls';
 
@@ -118,7 +118,7 @@ class SingleSeriesPane extends Component {
             </Grid.Column>
             <Grid.Column width={14} >
               <div style={{ width: '100%', height: '100%' }} ref={this.drawerContainer}>
-                <TimeSeriesDrawer
+                <SeriesDrawer
                   key={drawerKey}
                   width={drawerWidth}
                   height={drawerHeight}
