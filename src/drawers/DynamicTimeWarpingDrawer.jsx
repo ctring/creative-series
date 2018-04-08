@@ -17,49 +17,49 @@ import {
 
 export default class DynamicTimeWarpingDrawer extends Component {
   state = {
-    userOffset1: [],
-    userOffset2: [],
-    screenOffset1: [],
-    screenOffset2: [],
+    userOffset: [],   // 2-D array
+    screenOffset: [], // 2-D array
+    focusSeries: 1,
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const { height, series1, series2, rangeY } = nextProps;
-    const { userOffset1, userOffset2 } = prevState;
-    const computedRangeY = rangeY || getRangeFromMultipleSeries(series1, series2);
+    const { height, series, rangeY } = nextProps;
+    const { userOffset } = prevState;
+    const computedRangeY = rangeY || getRangeFromMultipleSeries(...series);
+
+    const newUserOffset = prevState.userOffset.length == 0 ?
+      Array(series.length).fill([]) : prevState.userOffset;
+    
+    const newScreenOffset = newUserOffset.map((offsets) => (
+      offsets.map((offset) => scale(offset, rangeY[0], rangeY[1], height, 0))
+    ));
 
     // Update offset when new rangeY comes in
     return {
-      screenOffset1: userOffset1.map(
-        (offset) => scale(offset, rangeY[0], rangeY[1], height, 0)
-      ),
-      screenOffset2: userOffset2.map(
-        (offset) => scale(offset, rangeY[0], rangeY[1], height, 0)
-      )
+      screenOffset: newScreenOffset,
+      userOffset: newUserOffset,
     }
   }
 
   render() {
     const {
       width, height,
-      series1, series2,
+      series,         // 2-D array
       onOffsetChange,
       showOriginal,
       rangeY,
     } = this.props;
 
     const {
-      screenOffset1, screenOffset2,
-      userOffset1, userOffset2,
+      screenOffset,
+      userOffset,
     } = this.state;
-    const space1 = computeSpace(series1, width);
-    const space2 = computeSpace(series2, width);
-    const computedRangeY = rangeY || getRangeFromMultipleSeries(series1, series2);
-    const screenX1 = computeScreenX(series1, space1);
-    const screenY1 = computeScreenY(series1, rangeY, height);
-    const screenX2 = computeScreenX(series2, space2);
-    const screenY2 = computeScreenY(series2, rangeY, height);
 
+    const space = series.map((s) => computeSpace(s, width));
+    const computedRangeY = rangeY || getRangeFromMultipleSeries(...series);
+    const screenX = series.map((s, i) => computeScreenX(s, space[i]));
+    const screenY = series.map((s) => computeScreenY(s, rangeY, height));
+    
     // Function for updating the offsets of the points
     // let offsetUpdateFunc = (e) => {
     //   if (e.evt && e.evt.buttons === 1) {
@@ -76,25 +76,30 @@ export default class DynamicTimeWarpingDrawer extends Component {
     //     this.setState({ screenOffset: newScreenOffset, userOffset: newUserOffset });
     //   }
     // };
-    const zeroOffset1 = Array(screenOffset1.length).fill(0);
-    const zeroOffset2 = Array(screenOffset2.length).fill(0);    
+    const zeroOffset = screenOffset.map((so) => (Array(so.length).fill(0)));
+
     return (
       <Stage width={width} height={height}
-        // onMouseMove={offsetUpdateFunc}
-        // onMouseDown={offsetUpdateFunc}
-        >
+      // onMouseMove={offsetUpdateFunc}
+      // onMouseDown={offsetUpdateFunc}
+      >
         <Layer>
-          {showOriginal && renderLines(screenX1, screenY1, zeroOffset1, 'gray')}
-          {showOriginal && renderPoints(screenX1, screenY1, zeroOffset1, 'original1')}
-
-          {showOriginal && renderLines(screenX2, screenY2, zeroOffset1, 'gray')}
-          {showOriginal && renderPoints(screenX2, screenY2, zeroOffset2, 'original2')}
-
-          {renderLines(screenX1, screenY1, screenOffset1, 'red')}
-          {renderPoints(screenX1, screenY1, screenOffset1, 'new1')}
-
-          {renderLines(screenX2, screenY2, screenOffset2, 'blue')}
-          {renderPoints(screenX2, screenY2, screenOffset2, 'new2')}
+          {
+            showOriginal && (
+              screenY.reduce((prev, screenYi, i) => {
+                prev.push(renderLines(screenX[i], screenYi, zeroOffset[i], 'gray', 'original' + i));
+                prev.push(renderPoints(screenX[i], screenYi, zeroOffset[i], 'original' + i));
+                return prev;
+              }, [])
+            )
+          }
+          {
+            screenY.reduce((prev, screenYi, i) => {
+              prev.push(renderLines(screenX[i], screenYi, screenOffset[i], 'red', 'new' + i));
+              prev.push(renderPoints(screenX[i], screenYi, screenOffset[i], 'new' + i));
+              return prev;
+            }, [])
+          }
         </Layer>
       </Stage>
     )
@@ -104,10 +109,10 @@ export default class DynamicTimeWarpingDrawer extends Component {
 DynamicTimeWarpingDrawer.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
-  series1: PropTypes.array.isRequired,
-  series2: PropTypes.array.isRequired,
+  series: PropTypes.array.isRequired,
   rangeY: PropTypes.array,
   pointRadius: PropTypes.number,
   onOffsetChange: PropTypes.func,
   showOriginal: PropTypes.bool,
+  focusSeries: PropTypes.number,
 }

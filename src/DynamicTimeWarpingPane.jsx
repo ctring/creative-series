@@ -151,8 +151,7 @@ class DynamicTimeWarpingPane extends Component {
                   key={drawerKey}
                   width={drawerWidth}
                   height={drawerHeight}
-                  series1={currentSeries1}
-                  series2={currentSeries2}
+                  series={[currentSeries1, currentSeries2]}
                   rangeY={[lowY, highY]}
                   showOriginal={showOriginal}
                   onOffsetChange={this.onOffsetChange} />

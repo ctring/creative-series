@@ -37,8 +37,14 @@ export default function GraphControls(props) {
 }
 
 GraphControls.propTypes = {
-  lowY: PropTypes.number,
-  highY: PropTypes.number,
+  lowY: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number
+  ]),
+  highY: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number
+  ]),
   showOriginal: PropTypes.bool,
   onChange: PropTypes.func,
   onChangeCheckbox: PropTypes.func,

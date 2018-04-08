@@ -28,23 +28,23 @@ function computeScreenX(series, space) {
   ));
 }
 
-function renderLines(screenX, screenY, screenOffset, stroke) {
+function renderLines(screenX, screenY, screenOffset, stroke, key) {
   let points = [];
   screenY.forEach((y, i) => {
     points.push(screenX[i]);
     points.push(y + (screenOffset[i] || 0));
   });
-  return <Line points={points} stroke={stroke} />
+  return <Line points={points} stroke={stroke} key={key} />
 }
 
-function renderPoints(screenX, screenY, screenOffset, name) {
+function renderPoints(screenX, screenY, screenOffset, key) {
   return screenY.map((y, i) => (
     <Circle
       x={screenX[i]}
       y={y + (screenOffset[i] || 0)}
       radius={POINT_RADIUS}
       fill='black'
-      key={name + i.toString()}
+      key={key + i.toString()}
     />))
 }
 
