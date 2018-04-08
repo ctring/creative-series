@@ -3,7 +3,10 @@ import PropTypes from 'prop-types';
 import { Form, Input } from 'semantic-ui-react';
 
 export default function GraphControls(props) {
-  const { lowY, highY, onChange } = props;
+  const {
+    lowY, highY, showOriginal,
+    onChange, onChangeCheckbox
+  } = props;
   return (
     <Form>
       <Form.Field
@@ -24,6 +27,11 @@ export default function GraphControls(props) {
         value={lowY}
         onChange={onChange}
         label='Low Y' />
+      <Form.Checkbox
+        label='Show original'
+        name='showOriginal'
+        checked={showOriginal}
+        onChange={onChangeCheckbox} />
     </Form>
   )
 }
@@ -31,5 +39,7 @@ export default function GraphControls(props) {
 GraphControls.propTypes = {
   lowY: PropTypes.number,
   highY: PropTypes.number,
+  showOriginal: PropTypes.bool,
   onChange: PropTypes.func,
+  onChangeCheckbox: PropTypes.func,
 };

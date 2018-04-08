@@ -12,7 +12,6 @@ class CopiableTextOutput extends Component {
   render() {
     const { content, label } = this.props;
     const { copied } = this.state;
-    console.log(copied);
     return (
       <Container fluid>
         <Segment padded attached='top'>

@@ -79,36 +79,55 @@ export default class TimeSeriesDrawer extends Component {
     }
   }
 
-  renderLines() {
+  renderLines(isOriginal) {
     const { screenOffset } = this.state;
     let screenSeries = this.screenSeries();
     let screenX = this.screenX();
     let points = [];
+    let stroke;
     screenSeries.forEach((y, i) => {
       points.push(screenX[i]);
-      points.push(y + (screenOffset[i] || 0));
+      if (isOriginal) {
+        points.push(y);
+        stroke='gray';
+      }
+      else {
+        points.push(y + (screenOffset[i] || 0));
+        stroke='red';
+      }
     });
-    return <Line points={points} stroke='red' />
+    return <Line points={points} stroke={stroke} />
   }
 
-  renderPoints() {
+  renderPoints(isOriginal) {
     const { pointRadius } = this.props;
     const { screenOffset } = this.state;
     let screenSeries = this.screenSeries();
     let screenX = this.screenX();
-    return screenSeries.map((y, i) => (
-      <Circle
-        x={screenX[i]}
-        y={y + (screenOffset[i] || 0)}
-        radius={pointRadius || 2}
-        fill='black'
-        key={'ts-' + i}
-      />
-    ))
+    return screenSeries.map((y, i) => {
+      let screenY, key;
+      if (isOriginal) {
+        screenY = y;
+        key = 'orig-' + i;
+      }
+      else {
+        screenY = y + (screenOffset[i] || 0);
+        key = 'new-' + i;
+      }
+      return (
+        <Circle
+          x={screenX[i]}
+          y={screenY}
+          radius={pointRadius || 2}
+          fill='black'
+          key={key}
+        />
+      )
+    })
   }
 
   render() {
-    const { width, height, onOffsetChange } = this.props;
+    const { width, height, onOffsetChange, showOriginal } = this.props;
     const { screenOffset, userOffset } = this.state;
 
     let space = this.space();
@@ -137,6 +156,8 @@ export default class TimeSeriesDrawer extends Component {
         onMouseMove={offsetUpdateFunc}
         onMouseDown={offsetUpdateFunc}>
         <Layer>
+          {showOriginal && this.renderLines(true)}
+          {showOriginal && this.renderPoints(true)}          
           {this.renderLines()}
           {this.renderPoints()}
         </Layer>
@@ -152,4 +173,5 @@ TimeSeriesDrawer.propTypes = {
   rangeY: PropTypes.array,
   pointRadius: PropTypes.number,
   onOffsetChange: PropTypes.func,
+  showOriginal: PropTypes.bool,
 }

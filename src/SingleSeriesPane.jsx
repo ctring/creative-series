@@ -16,13 +16,16 @@ class SingleSeriesPane extends Component {
     this.state = {
       currentSeries: initialSeries,
       offset: [],
-      errorMessage: '',
       drawerKey: 0,
       drawerWidth: 1000,
       drawerHeight: 400,
+
       inputSeriesStr: '',
+      errorMessage: '',
+
       lowY: -1,
       highY: 1,
+      showOriginal: true,
     };
 
     this.drawerContainer = React.createRef();
@@ -30,6 +33,10 @@ class SingleSeriesPane extends Component {
 
   onChange = (e, { name, value }) => {
     this.setState({ [name]: value });
+  }
+
+  onChangeCheckbox = (e, { name, checked }) => {
+    this.setState({ [name]: checked });
   }
 
   onResize = () => {
@@ -90,7 +97,7 @@ class SingleSeriesPane extends Component {
     const {
       drawerKey, drawerWidth, drawerHeight,
       currentSeries, offset,
-      lowY, highY
+      lowY, highY, showOriginal
     } = this.state;
 
     const outputSeries = currentSeries.map(
@@ -102,7 +109,12 @@ class SingleSeriesPane extends Component {
         <Grid celled>
           <Grid.Row centered columns={2}>
             <Grid.Column width={2}>
-              <GraphControls lowY={lowY} highY={highY} onChange={this.onChange} />
+              <GraphControls
+                lowY={lowY}
+                highY={highY}
+                showOriginal={showOriginal}
+                onChange={this.onChange}
+                onChangeCheckbox={this.onChangeCheckbox} />
             </Grid.Column>
             <Grid.Column width={14} >
               <div style={{ width: '100%', height: '100%' }} ref={this.drawerContainer}>
@@ -112,6 +124,7 @@ class SingleSeriesPane extends Component {
                   height={drawerHeight}
                   series={currentSeries}
                   rangeY={[lowY, highY]}
+                  showOriginal={showOriginal}
                   onOffsetChange={this.onOffsetChange} />
               </div>
             </Grid.Column>
