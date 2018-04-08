@@ -4,7 +4,7 @@ import { Stage, Layer, Line, Circle } from 'react-konva';
 
 function translate(x, fromLow, fromHigh, toLow, toHigh) {
   let factor = (toHigh - toLow) / (fromHigh - fromLow);
-  return x - factor*fromLow + toLow;  
+  return x - factor * fromLow + toLow;
 }
 
 function scale(x, fromLow, fromHigh, toLow, toHigh) {

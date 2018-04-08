@@ -28,7 +28,9 @@ class SingleSeriesPane extends Component {
     this.drawerContainer = React.createRef();
   }
 
-  onChange = (e, { name, value }) => { this.setState({ [name]: value }); }
+  onChange = (e, { name, value }) => {
+    this.setState({ [name]: value });
+  }
 
   onResize = () => {
     const newWidth = this.drawerContainer.current.offsetWidth;
@@ -85,10 +87,11 @@ class SingleSeriesPane extends Component {
   }
 
   render() {
-    const { 
+    const {
       drawerKey, drawerWidth, drawerHeight,
       currentSeries, offset,
-      lowY, highY } = this.state;
+      lowY, highY
+    } = this.state;
 
     const outputSeries = currentSeries.map(
       (x, i) => ((x + (offset[i] || 0)).toFixed(2))
@@ -102,7 +105,7 @@ class SingleSeriesPane extends Component {
               <GraphControls lowY={lowY} highY={highY} onChange={this.onChange} />
             </Grid.Column>
             <Grid.Column width={14} >
-              <div style={{width: '100%', height: '100%'}} ref={this.drawerContainer}>
+              <div style={{ width: '100%', height: '100%' }} ref={this.drawerContainer}>
                 <TimeSeriesDrawer
                   key={drawerKey}
                   width={drawerWidth}
@@ -119,7 +122,7 @@ class SingleSeriesPane extends Component {
               {this.renderInputForm()}
             </Grid.Column>
             <Grid.Column>
-              <CopiableTextOutput content={outputSeries} />
+              <CopiableTextOutput content={outputSeries} label='Modified series' />
             </Grid.Column>
           </Grid.Row>
         </Grid>

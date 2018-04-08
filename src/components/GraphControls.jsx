@@ -1,28 +1,30 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Input } from 'semantic-ui-react';
+import { Form, Input } from 'semantic-ui-react';
 
 export default function GraphControls(props) {
   const { lowY, highY, onChange } = props;
-  return(
-    <div>
-      <Input
+  return (
+    <Form>
+      <Form.Field
         fluid
         type='number'
-        name='lowY'
-        step={0.1}
-        value={lowY}
-        onChange={onChange}
-        label='Low Y' />
-      <Input
-        fluid        
-        type='number'
+        control={Input}
         name='highY'
         step={0.1}
         value={highY}
         onChange={onChange}
         label='High Y' />
-    </div>
+      <Form.Field
+        fluid
+        type='number'
+        control={Input}
+        name='lowY'
+        step={0.1}
+        value={lowY}
+        onChange={onChange}
+        label='Low Y' />
+    </Form>
   )
 }
 
