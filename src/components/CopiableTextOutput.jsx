@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Container, Button, Segment, Label, Message } from 'semantic-ui-react';
+import { Button, Segment, Label, Message } from 'semantic-ui-react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 
 class CopiableTextOutput extends Component {

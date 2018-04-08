@@ -91,7 +91,7 @@ class DynamicTimeWarpingPane extends Component {
   }
 
   onOffsetChange = (offset) => {
-    this.setState({ offset });
+    this.setState({ offset1: offset[0], offset2: offset[1] });
   }
 
   renderInputForm = () => {
