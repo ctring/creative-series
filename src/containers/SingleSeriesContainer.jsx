@@ -4,9 +4,12 @@ import { Grid, Form, Message, Input } from 'semantic-ui-react';
 import TimeSeriesDrawer from '../components/TimeSeriesDrawer';
 import CopiableTextOutput from '../components/CopiableTextOutput';
 
+const initialSeries = Array(10).fill(0);
+
 class SingleSeriesContainer extends Component {
   state = {
-    currentSeries: Array(10).fill(0),
+    currentSeries: initialSeries,
+    offset: [],
     errorMessage: '',
     drawerKey: 0,
     inputSeriesStr: '',
@@ -18,48 +21,55 @@ class SingleSeriesContainer extends Component {
 
   onSeriesSubmit = () => {
     const { inputSeriesStr, drawerKey } = this.state;
-    let inputSeries = inputSeriesStr.split(',').map((x) => (parseFloat(x, 10)));
+    let inputSeries = inputSeriesStr ?
+      inputSeriesStr.split(',').map((x) => (parseFloat(x, 10))) :
+      initialSeries;
     if (inputSeries.findIndex(isNaN) !== -1) {
-      this.setState({ 
-        errorMessage: 'Series must only contain numeric values' 
+      this.setState({
+        errorMessage: 'Series must only contain numeric values'
       });
     }
     else {
       const min = Math.min(...inputSeries);
       const max = Math.max(...inputSeries);
       const padding = max === min ? 1 : (max - min) * 0.1;
-      this.setState({ 
+      this.setState({
         currentSeries: inputSeries,
-        errorMessage: '', 
+        errorMessage: '',
         drawerKey: drawerKey + 1,
         lowY: min - padding,
         highY: max + padding,
+        offset: [],
       });
     }
+  }
+
+  onOffsetChange = (offset) => {
+    this.setState({ offset });
   }
 
   renderInputForm = () => {
     const { errorMessage, lowY, highY } = this.state;
     return (
       <Form error={errorMessage !== ''} onSubmit={this.onSeriesSubmit}>
-        <Message error header='Invalid series' content={errorMessage} />      
+        <Message error header='Invalid series' content={errorMessage} />
         <Form.Group widths='equal' label='Range of y-axis'>
-          <Form.Field 
+          <Form.Field
             type='number'
             control={Input}
             name='lowY'
             step={0.1}
             value={lowY}
             onChange={this.onChange}
-            label='Low Y'/>
+            label='Low Y' />
           <Form.Field
-            type='number' 
+            type='number'
             control={Input}
             name='highY'
             step={0.1}
             value={highY}
             onChange={this.onChange}
-            label='High Y'/>
+            label='High Y' />
         </Form.Group>
         <Form.TextArea
           label='Input series'
@@ -69,11 +79,14 @@ class SingleSeriesContainer extends Component {
           onChange={this.onChange}
         />
         <Form.Button content='Set series' />
-    </Form>);
+      </Form>);
   }
 
   render() {
-    const { currentSeries, drawerKey, lowY, highY } = this.state;
+    const { currentSeries, offset, drawerKey, lowY, highY } = this.state;
+    const outputSeries = currentSeries.map(
+      (x, i) => ((x + (offset[i] || 0)).toFixed(2))
+    ).join(', ');
 
     return (
       <Grid celled>
@@ -83,14 +96,15 @@ class SingleSeriesContainer extends Component {
             width={1200}
             height={400}
             series={currentSeries}
-            rangeY={[lowY, highY]}/>
+            rangeY={[lowY, highY]}
+            onOffsetChange={this.onOffsetChange} />
         </Grid.Row>
         <Grid.Row columns={2}>
           <Grid.Column>
             {this.renderInputForm()}
           </Grid.Column>
           <Grid.Column>
-            <CopiableTextOutput content={currentSeries.join(', ')} />
+            <CopiableTextOutput content={outputSeries} />
           </Grid.Column>
         </Grid.Row>
       </Grid>
