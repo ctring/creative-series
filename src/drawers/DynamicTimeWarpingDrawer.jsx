@@ -5,6 +5,7 @@ import { Stage, Layer } from 'react-konva';
 import {
   scale,
   getRangeFromMultipleSeries,
+  dynamicTimeWarping,
 } from './algorithms';
 
 import {
@@ -13,6 +14,8 @@ import {
   computeSpace,
   renderLines,
   renderPoints,
+  renderMatches,
+  packScreenData,
   PADDING,
 } from './drawing';
 
@@ -41,12 +44,12 @@ export default class DynamicTimeWarpingDrawer extends Component {
     }
   }
 
-  render() {
+  // Function for updating the offsets of the points
+  offsetUpdateFunc = (e) => {
     const {
-      width, height,
-      series,         // 2-D array
+      height, width,
       onOffsetChange,
-      showOriginal,
+      series,
       rangeY,
       focusSeries,      
     } = this.props;
@@ -58,47 +61,74 @@ export default class DynamicTimeWarpingDrawer extends Component {
 
     const space = series.map((s) => computeSpace(s, width));
     const computedRangeY = rangeY || getRangeFromMultipleSeries(...series);
-    const screenX = series.map((s, i) => computeScreenX(s, space[i]));
     const screenY = series.map((s) => computeScreenY(s, rangeY, height));
 
-    // Function for updating the offsets of the points
-    let offsetUpdateFunc = (e) => {
-      if (e.evt && e.evt.buttons === 1) {
-        const index = Math.floor((e.evt.layerX - PADDING + space[focusSeries] / 2)
-          / space[focusSeries]);
+    if (e.evt && e.evt.buttons === 1) {
+      const index = Math.floor((e.evt.layerX - PADDING + space[focusSeries] / 2)
+        / space[focusSeries]);
 
-        let newScreenOffset = screenOffset.slice();
-        let newUserOffset = userOffset.slice();
-        let newScreenOffsetFS = newScreenOffset[focusSeries].slice();
-        let newUserOffsetFS = newUserOffset[focusSeries].slice();
+      let newScreenOffset = screenOffset.slice();
+      let newUserOffset = userOffset.slice();
+      let newScreenOffsetFS = newScreenOffset[focusSeries].slice();
+      let newUserOffsetFS = newUserOffset[focusSeries].slice();
 
-        newScreenOffsetFS[index] = e.evt.layerY - screenY[focusSeries][index];
-        newUserOffsetFS[index] = scale(newScreenOffsetFS[index],
-          0, height, computedRangeY[1], computedRangeY[0]);
+      newScreenOffsetFS[index] = e.evt.layerY - screenY[focusSeries][index];
+      newUserOffsetFS[index] = scale(newScreenOffsetFS[index],
+        0, height, computedRangeY[1], computedRangeY[0]);
 
-        onOffsetChange && onOffsetChange(newUserOffset);
+      onOffsetChange && onOffsetChange(newUserOffset);
 
-        newScreenOffset[focusSeries] = newScreenOffsetFS;
-        newUserOffset[focusSeries] = newUserOffsetFS;
+      newScreenOffset[focusSeries] = newScreenOffsetFS;
+      newUserOffset[focusSeries] = newUserOffsetFS;
 
-        this.setState({ screenOffset: newScreenOffset, userOffset: newUserOffset });
-      }
-    };
+      this.setState({ screenOffset: newScreenOffset, userOffset: newUserOffset });
+    }
+  };
 
+  render() {
+    const {
+      width, height,
+      series,         // 2-D array
+      showOriginal,
+      rangeY,  
+    } = this.props;
+
+    const {
+      screenOffset,
+      userOffset,
+    } = this.state;
+
+    const space = series.map((s) => computeSpace(s, width));
+    const screenX = series.map((s, i) => computeScreenX(s, space[i]));
+    const screenY = series.map((s) => computeScreenY(s, rangeY, height));
     const zeroOffset = screenOffset.map((so) => (Array(so.length).fill(0)));
+    
+    // Perform dynamic time warping rendering on series 0 and 1 only
+    const { matches } = dynamicTimeWarping(
+      series[0].map((s, i) => (s + (userOffset[0][i] || 0))), 
+      series[1].map((s, i) => (s + (userOffset[1][i] || 0))));
+    const screenData0 = packScreenData(screenX[0], screenY[0], screenOffset[0]);
+    const screenData1 = packScreenData(screenX[1], screenY[1], screenOffset[1]);
+
     return (
       <Stage width={width} height={height}
-        onMouseMove={offsetUpdateFunc}
-        onMouseDown={offsetUpdateFunc}>
-        <Layer>
-          {
-            showOriginal && (
+        onMouseMove={this.offsetUpdateFunc}
+        onMouseDown={this.offsetUpdateFunc}
+        style={{cursor: 'crosshair'}}>
+        {showOriginal &&
+          <Layer>
+            {
               screenY.reduce((prev, screenYi, i) => {
                 prev.push(renderLines(screenX[i], screenYi, zeroOffset[i], 'gray', 'original' + i));
                 prev.push(renderPoints(screenX[i], screenYi, zeroOffset[i], 'original' + i));
                 return prev;
               }, [])
-            )
+           }
+          </Layer>
+        }
+        <Layer>
+          {
+            renderMatches(screenData0, screenData1, matches, 'blue')
           }
           {
             screenY.reduce((prev, screenYi, i) => {
@@ -116,10 +146,13 @@ export default class DynamicTimeWarpingDrawer extends Component {
 DynamicTimeWarpingDrawer.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
+  
   series: PropTypes.array.isRequired,
   rangeY: PropTypes.array,
-  pointRadius: PropTypes.number,
+  
   onOffsetChange: PropTypes.func,
+  
   showOriginal: PropTypes.bool,
+  showDTWMatches: PropTypes.bool,
   focusSeries: PropTypes.number,
 }

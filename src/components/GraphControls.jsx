@@ -10,7 +10,10 @@ export default function GraphControls(props) {
   } = props;
 
   const seriesOptions = Array.from(
-    {length: numberOfSeries}, (x, i) => ({ key: i, text: 'Series ' + i, value: i }));
+    {length: numberOfSeries}, 
+    (x, i) => (
+      { key: i, text: 'Series ' + (i + 1), value: i }
+    ));
 
   return (
     <Form>

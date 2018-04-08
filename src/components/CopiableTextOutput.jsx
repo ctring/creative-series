@@ -23,7 +23,7 @@ class CopiableTextOutput extends Component {
       <div>
         <Segment padded attached='top'>
           <Label attached='top left'>{label}</Label>
-          <pre>{content}</pre>
+          <pre style={{ overflow: 'auto' }}>{content}</pre>
           <Message positive hidden={!copied}>
             Copied to clipboard!
           </Message>

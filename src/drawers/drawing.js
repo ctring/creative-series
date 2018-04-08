@@ -28,6 +28,14 @@ function computeScreenX(series, space) {
   ));
 }
 
+/**
+ * Render lines connecting points of a series.
+ * @param {array} screenX screen X-coordinates of the points
+ * @param {array} screenY screen Y-coordinates of the points
+ * @param {array} screenOffset offsets of the screen Y-coordinates
+ * @param {string} stroke stroke color props of konva Line component
+ * @param {string} key key for the line
+ */
 function renderLines(screenX, screenY, screenOffset, stroke, key) {
   let points = [];
   screenY.forEach((y, i) => {
@@ -37,6 +45,13 @@ function renderLines(screenX, screenY, screenOffset, stroke, key) {
   return <Line points={points} stroke={stroke} key={key} />
 }
 
+/**
+ * Render points of a series.
+ * @param {array} screenX screen X-coordinates of the points
+ * @param {array} screenY screen Y-coordinates of the points
+ * @param {array} screenOffset offsets of the screen Y-coordinates
+ * @param {string} key prefix of key for the set of points
+ */
 function renderPoints(screenX, screenY, screenOffset, key) {
   return screenY.map((y, i) => (
     <Circle
@@ -48,12 +63,48 @@ function renderPoints(screenX, screenY, screenOffset, key) {
     />))
 }
 
+function packScreenData(screenX, screenY, screenOffset) {
+  return { screenX, screenY, screenOffset };
+}
+
+/**
+ * Render the matching lines between two series.
+ * @param {object} screenData0 object of first series { screenX, screenY, screenOffset }
+ * @param {object} screenData1 object of second series { screenX, screenY, screenOffset }
+ * @param {array} matches array of pairs of point indices being matched
+ * @param {string} stroke stroke color props of konva Line component
+ */
+function renderMatches(screenData0, screenData1, matches, stroke) {
+  const {
+    screenX: screenX0,
+    screenY: screenY0,
+    screenOffset: screenOffset0
+  } = screenData0;
+  const {
+    screenX: screenX1,
+    screenY: screenY1,
+    screenOffset: screenOffset1
+  } = screenData1;
+
+  return matches.map((match, i) => {
+    const { 0: m0, 1: m1} = match;
+    const x0 = screenX0[m0];
+    const y0 = screenY0[m0] + (screenOffset0[m0] || 0);
+    const x1 = screenX1[m1];
+    const y1 = screenY1[m1] + (screenOffset1[m1] || 0);
+    const points = [x0, y0, x1, y1];
+    return <Line points={points} stroke={stroke} key={'match-' + i} />
+  })
+}
+
 export { 
   computeScreenX, 
   computeScreenY, 
   computeSpace,
   renderLines,
   renderPoints,
+  renderMatches,
+  packScreenData,
   PADDING,
   POINT_RADIUS
 };

@@ -38,12 +38,13 @@ function fillArray(shape, value) {
 const euclideanReduce = (prev, x, y) => (prev + Math.pow((x - y),2))
 
 function dynamicTimeWarping(a, b, reduceFunc = euclideanReduce) {
+  console.log(a);
   const m = a.length;
   const n = b.length;
   if (m === 0 || n === 0) {
     return {
       distance: 0,
-      path: [],
+      matches: [],
     }
   }
 
@@ -82,9 +83,9 @@ function dynamicTimeWarping(a, b, reduceFunc = euclideanReduce) {
 
   let i = m - 1;
   let j = n - 1;
-  let path = [];
+  let matches = [];
   while (i !== -1) {
-    path.push([i, j])
+    matches.push([i, j])
     const tr = trace[i][j];
     i = tr[0];
     j = tr[1];
@@ -92,7 +93,7 @@ function dynamicTimeWarping(a, b, reduceFunc = euclideanReduce) {
 
   return {
     distance: Math.sqrt(f[m - 1][n - 1]),
-    path
+    matches
   };
 }
 

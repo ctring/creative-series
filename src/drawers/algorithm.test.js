@@ -4,7 +4,7 @@ it('computes dynamic time warping of two empty series', () => {
   expect(dynamicTimeWarping([], [])).toEqual(
     {
       distance: 0,
-      path: [],
+      matches: [],
     }
   );
 });
@@ -15,7 +15,7 @@ it('computes dynamic time warping of to series', () => {
   expect(dynamicTimeWarping(a, b)).toEqual(
     {
       distance: Math.sqrt(17.25),
-      path: [[3, 3], [2, 2], [1, 1], [0, 0]],
+      matches: [[3, 3], [2, 2], [1, 1], [0, 0]],
     }
   );
 })
