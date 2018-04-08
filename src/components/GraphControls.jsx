@@ -4,7 +4,7 @@ import { Form, Input } from 'semantic-ui-react';
 
 export default function GraphControls(props) {
   const {
-    lowY, highY, showOriginal,
+    lowY, highY, showOriginal, showDTWMatches,
     onChange, onChangeCheckbox,
     numberOfSeries, focusSeries,
   } = props;
@@ -30,10 +30,12 @@ export default function GraphControls(props) {
       <Form.Checkbox label='Show original' name='showOriginal'
         checked={showOriginal} onChange={onChangeCheckbox} />
       {numberOfSeries > 1 &&
+        <Form.Checkbox label='Show DTW matches' name='showDTWMatches'
+        checked={showDTWMatches} onChange={onChangeCheckbox} />}
+      {numberOfSeries > 1 &&
         <Form.Select fluid label='Focus series' name='focusSeries'
           options={seriesOptions} value={parseInt(focusSeries, 10)} 
-          onChange={onChange} />
-      }
+          onChange={onChange} />}
     </Form>
   )
 }
@@ -50,6 +52,7 @@ GraphControls.propTypes = {
   numberOfSeries: PropTypes.number,
   focusSeries: PropTypes.number,  
   showOriginal: PropTypes.bool,
+  showDTWMatches: PropTypes.bool,
   onChange: PropTypes.func,
   onChangeCheckbox: PropTypes.func,
 };

@@ -32,6 +32,7 @@ class DynamicTimeWarpingPane extends Component {
       lowY: -1,
       highY: 1,
       showOriginal: true,
+      showDTWMatches: false,
     };
 
     this.drawerContainer = React.createRef();
@@ -124,7 +125,7 @@ class DynamicTimeWarpingPane extends Component {
       drawerKey, drawerWidth, drawerHeight,
       currentSeries1, currentSeries2, focusSeries,
       offset1, offset2,
-      lowY, highY, showOriginal
+      lowY, highY, showOriginal, showDTWMatches,
     } = this.state;
 
     const outputSeries1 = currentSeries1.map(
@@ -144,6 +145,7 @@ class DynamicTimeWarpingPane extends Component {
                 lowY={lowY}
                 highY={highY}
                 showOriginal={showOriginal}
+                showDTWMatches={showDTWMatches}
                 onChange={this.onChange}
                 onChangeCheckbox={this.onChangeCheckbox}
                 numberOfSeries={2}
@@ -158,6 +160,7 @@ class DynamicTimeWarpingPane extends Component {
                   series={[currentSeries1, currentSeries2]}
                   rangeY={[lowY, highY]}
                   showOriginal={showOriginal}
+                  showDTWMatches={showDTWMatches}
                   onOffsetChange={this.onOffsetChange}
                   focusSeries={focusSeries} />
               </div>

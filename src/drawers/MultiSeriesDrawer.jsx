@@ -89,8 +89,8 @@ export default class DynamicTimeWarpingDrawer extends Component {
     const {
       width, height,
       series,         // 2-D array
+      rangeY,      
       showOriginal, showDTWMatches,
-      rangeY,  
     } = this.props;
 
     const {
