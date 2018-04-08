@@ -21,4 +21,17 @@ function getRangeFromSeries(series) {
   return [min - padding, max + padding];
 }
 
-export { translate, scale, scaleAndTranslate, getRangeFromSeries };
+function getRangeFromMultipleSeries(...series) {
+  return series.reduce((prev, current) => {
+    return [Math.min(prev[0], getRangeFromSeries(current)),
+            Math.max(prev[1], getRangeFromSeries(current))];
+  }, [Infinity, -Infinity]);
+}
+
+export {
+  translate,
+  scale,
+  scaleAndTranslate,
+  getRangeFromSeries,
+  getRangeFromMultipleSeries,
+};

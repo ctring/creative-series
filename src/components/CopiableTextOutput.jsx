@@ -13,11 +13,14 @@ class CopiableTextOutput extends Component {
     const { content, label } = this.props;
     const { copied } = this.state;
     return (
-      <Container fluid>
+      <div>
         <Segment padded attached='top'>
           <Label attached='top left'>{label}</Label>
-          <p>{content}</p>
-        </Segment>
+          <pre>{content}</pre>
+          <Message positive hidden={!copied}>
+            Copied to clipboard!
+          </Message>
+        </Segment>        
         <CopyToClipboard text={this.props.content}>
           <Button
             attached='bottom'
@@ -27,10 +30,7 @@ class CopiableTextOutput extends Component {
               this.setState({ copied: true })
             }} />
         </CopyToClipboard>
-        <Message positive hidden={!copied}>
-          Copied to clipboard!
-        </Message>
-      </Container>
+      </div>
     )
   };
 }

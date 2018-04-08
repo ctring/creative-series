@@ -24,10 +24,7 @@ export default class SeriesDrawer extends Component {
 
   // Y range from user
   userRangeY() {
-    if (this.props.rangeY) {
-      return this.props.rangeY.map(parseFloat);
-    }
-    return getRangeFromSeries(this.props.series)
+   
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -44,11 +41,15 @@ export default class SeriesDrawer extends Component {
   }
 
   render() {
-    const { width, height, series, onOffsetChange, showOriginal } = this.props;
+    const { 
+      width, height, 
+      series, rangeY,
+      onOffsetChange, 
+      showOriginal 
+    } = this.props;
     const { screenOffset, userOffset } = this.state;
-
     const space = computeSpace(series, width);
-    const userRangeY = this.userRangeY();
+    const userRangeY = rangeY ? rangeY.map(parseFloat) : getRangeFromSeries(series);
     const screenX = computeScreenX(series, space);
     const screenY = computeScreenY(series, userRangeY, height);
 
@@ -69,15 +70,16 @@ export default class SeriesDrawer extends Component {
       }
     };
 
+    const zeroOffset = Array(screenOffset.length).fill(0);
     return (
       <Stage width={width} height={height}
         onMouseMove={offsetUpdateFunc}
         onMouseDown={offsetUpdateFunc}>
         <Layer>
-          {showOriginal && renderLines(screenX, screenY, screenOffset, true)}
-          {showOriginal && renderPoints(screenX, screenY, screenOffset, true)}
-          {renderLines(screenX, screenY, screenOffset, false)}
-          {renderPoints(screenX, screenY, screenOffset, false)}
+          {showOriginal && renderLines(screenX, screenY, zeroOffset, 'gray')}
+          {showOriginal && renderPoints(screenX, screenY, zeroOffset, 'original')}
+          {renderLines(screenX, screenY, screenOffset, 'red')}
+          {renderPoints(screenX, screenY, screenOffset, 'new')}
         </Layer>
       </Stage>
     )
