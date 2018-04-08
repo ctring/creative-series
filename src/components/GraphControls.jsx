@@ -10,7 +10,7 @@ export default function GraphControls(props) {
   } = props;
 
   const seriesOptions = Array.from(
-    {length: numberOfSeries}, 
+    { length: numberOfSeries },
     (x, i) => (
       { key: i, text: 'Series ' + (i + 1), value: i }
     ));
@@ -31,10 +31,10 @@ export default function GraphControls(props) {
         checked={showOriginal} onChange={onChangeCheckbox} />
       {numberOfSeries > 1 &&
         <Form.Checkbox label='Show DTW matches' name='showDTWMatches'
-        checked={showDTWMatches} onChange={onChangeCheckbox} />}
+          checked={showDTWMatches} onChange={onChangeCheckbox} />}
       {numberOfSeries > 1 &&
         <Form.Select fluid label='Focus series' name='focusSeries'
-          options={seriesOptions} value={parseInt(focusSeries, 10)} 
+          options={seriesOptions} value={parseInt(focusSeries, 10)}
           onChange={onChange} />}
     </Form>
   )
@@ -50,7 +50,7 @@ GraphControls.propTypes = {
     PropTypes.number
   ]),
   numberOfSeries: PropTypes.number,
-  focusSeries: PropTypes.number,  
+  focusSeries: PropTypes.number,
   showOriginal: PropTypes.bool,
   showDTWMatches: PropTypes.bool,
   onChange: PropTypes.func,

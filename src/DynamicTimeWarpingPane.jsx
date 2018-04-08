@@ -169,7 +169,7 @@ class DynamicTimeWarpingPane extends Component {
           </Grid.Row>
           <Grid.Row columns={2}>
             <Grid.Column>
-              {this.renderInputForm()}              
+              {this.renderInputForm()}
             </Grid.Column>
             <Grid.Column>
               <CopiableTextOutput content={outputSeries1} label='Modified series 1' />

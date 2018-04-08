@@ -23,8 +23,10 @@ function getRangeFromSeries(series) {
 
 function getRangeFromMultipleSeries(...series) {
   return series.reduce((prev, current) => {
-    return [Math.min(prev[0], getRangeFromSeries(current)),
-            Math.max(prev[1], getRangeFromSeries(current))];
+    return [
+      Math.min(prev[0], getRangeFromSeries(current)),
+      Math.max(prev[1], getRangeFromSeries(current))
+    ];
   }, [Infinity, -Infinity]);
 }
 
@@ -35,7 +37,7 @@ function fillArray(shape, value) {
   return Array.from({ length: shape[0] }, (v, i) => fillArray(shape.slice(1), value));
 }
 
-const euclideanReduce = (prev, x, y) => (prev + Math.pow((x - y),2))
+const euclideanReduce = (prev, x, y) => (prev + Math.pow((x - y), 2))
 
 function dynamicTimeWarping(a, b, reduceFunc = euclideanReduce) {
   console.log(a);
@@ -62,7 +64,7 @@ function dynamicTimeWarping(a, b, reduceFunc = euclideanReduce) {
     f[0][i] = reduceFunc(f[0][i - 1], a[0], b[i]);
     trace[0][i] = [0, i - 1];
   }
-  
+
   for (let i = 1; i < m; i++) {
     for (let j = 1; j < n; j++) {
       if (f[i - 1][j] < f[i][j - 1] && f[i - 1][j] < f[i - 1][j - 1]) {
