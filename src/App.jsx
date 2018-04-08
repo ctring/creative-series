@@ -6,16 +6,16 @@ import DynamicTimeWarpingPane from './DynamicTimeWarpingPane';
 
 const panes = [
   { 
-    menuItem: 'Single Series', 
-    render: () => (
-      <SingleSeriesPane />
-    )
-  },
-  { 
     menuItem: 'Dynamic Time Warping',
     render: () => (
       <DynamicTimeWarpingPane />
     ),
+  },
+  { 
+    menuItem: 'Single Series', 
+    render: () => (
+      <SingleSeriesPane />
+    )
   },
 ];
 

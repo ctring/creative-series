@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Grid, Form, Message } from 'semantic-ui-react';
+import { Grid } from 'semantic-ui-react';
 import ReactResizeDetector from 'react-resize-detector';
 
 import MultiSeriesDrawer from './drawers/MultiSeriesDrawer';
+import InputSeriesForm from './components/InputSeriesForm';
 import CopiableTextOutput from './components/CopiableTextOutput';
 import GraphControls from './components/GraphControls';
 
@@ -77,27 +78,12 @@ class SingleSeriesPane extends Component {
     this.setState({ offset: offset[0] });
   }
 
-  renderInputForm = () => {
-    const { errorMessage } = this.state;
-    return (
-      <Form error={errorMessage !== ''} onSubmit={this.onSeriesSubmit}>
-        <Message error header='Invalid series' content={errorMessage} />
-        <Form.TextArea
-          label='Input series'
-          name='inputSeriesStr'
-          placeholder='Enter a series of number separated by commas.'
-          autoHeight
-          onChange={this.onChange}
-        />
-        <Form.Button content='Set series' />
-      </Form>);
-  }
-
   render() {
     const {
       drawerKey, drawerWidth, drawerHeight,
       currentSeries, offset,
-      lowY, highY, showOriginal
+      lowY, highY, showOriginal,
+      errorMessage,
     } = this.state;
 
     const outputSeries = currentSeries.map(
@@ -132,7 +118,11 @@ class SingleSeriesPane extends Component {
           </Grid.Row>
           <Grid.Row columns={2}>
             <Grid.Column>
-              {this.renderInputForm()}
+              <InputSeriesForm numberOfSeries={1}
+                errorMessage={errorMessage}
+                onChange={this.onChange}
+                onSeriesSubmit={this.onSeriesSubmit}
+              />
             </Grid.Column>
             <Grid.Column>
               <CopiableTextOutput content={outputSeries} label='Modified series' />

@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Grid, Form, Message, Divider } from 'semantic-ui-react';
+import { Grid, Divider } from 'semantic-ui-react';
 import ReactResizeDetector from 'react-resize-detector';
 
 import MultiSeriesDrawer from './drawers/MultiSeriesDrawer';
+import InputSeriesForm from './components/InputSeriesForm';
 import CopiableTextOutput from './components/CopiableTextOutput';
 import GraphControls from './components/GraphControls';
 import { convertToSeriesFromString } from './utils'
@@ -60,7 +61,6 @@ class DynamicTimeWarpingPane extends Component {
     const inputSeries1 = inputSeriesStr1 ?
       convertToSeriesFromString(inputSeriesStr1, ',') :
       initialSeries;
-
     const inputSeries2 = inputSeriesStr2 ?
       convertToSeriesFromString(inputSeriesStr2, ',') :
       initialSeries;
@@ -69,12 +69,14 @@ class DynamicTimeWarpingPane extends Component {
       this.setState({
         errorMessage: 'Series 1 must only contain numeric values'
       });
+      return;
     }
 
     if (inputSeries2.findIndex(isNaN) !== -1) {
       this.setState({
         errorMessage: 'Series 2 must only contain numeric values'
       });
+      return;
     }
 
     const min = Math.min(...inputSeries1, ...inputSeries2);
@@ -97,35 +99,13 @@ class DynamicTimeWarpingPane extends Component {
     this.setState({ offset1: offset[0], offset2: offset[1] });
   }
 
-  renderInputForm = () => {
-    const { errorMessage } = this.state;
-    return (
-      <Form error={errorMessage !== ''} onSubmit={this.onSeriesSubmit}>
-        <Message error header='Invalid series' content={errorMessage} />
-        <Form.TextArea
-          label='Input series 1'
-          name='inputSeriesStr1'
-          placeholder='Enter a series of number separated by commas.'
-          autoHeight
-          onChange={this.onChange}
-        />
-        <Form.TextArea
-          label='Input series 2'
-          name='inputSeriesStr2'
-          placeholder='Enter a series of number separated by commas.'
-          autoHeight
-          onChange={this.onChange}
-        />
-        <Form.Button content='Set series' />
-      </Form>);
-  }
-
   render() {
     const {
       drawerKey, drawerWidth, drawerHeight,
       currentSeries1, currentSeries2, focusSeries,
       offset1, offset2,
-      lowY, highY, showOriginal, showDTWMatches,
+      lowY, highY, showOriginal, showDTWMatches, 
+      errorMessage,
     } = this.state;
 
     const outputSeries1 = currentSeries1.map(
@@ -169,7 +149,11 @@ class DynamicTimeWarpingPane extends Component {
           </Grid.Row>
           <Grid.Row columns={2}>
             <Grid.Column>
-              {this.renderInputForm()}
+              <InputSeriesForm numberOfSeries={2}
+                errorMessage={errorMessage}
+                onChange={this.onChange}
+                onSeriesSubmit={this.onSeriesSubmit}
+              />
             </Grid.Column>
             <Grid.Column>
               <CopiableTextOutput content={outputSeries1} label='Modified series 1' />
