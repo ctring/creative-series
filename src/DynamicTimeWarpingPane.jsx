@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Grid, Form, Message, Divider } from 'semantic-ui-react';
 import ReactResizeDetector from 'react-resize-detector';
 
-import DynamicTimeWarpingDrawer from './drawers/DynamicTimeWarpingDrawer';
+import MultiSeriesDrawer from './drawers/MultiSeriesDrawer';
 import CopiableTextOutput from './components/CopiableTextOutput';
 import GraphControls from './components/GraphControls';
 import { convertToSeriesFromString } from './utils'
@@ -139,7 +139,7 @@ class DynamicTimeWarpingPane extends Component {
       <div>
         <Grid celled>
           <Grid.Row centered columns={2}>
-            <Grid.Column width={2}>
+            <Grid.Column width={3}>
               <GraphControls
                 lowY={lowY}
                 highY={highY}
@@ -149,9 +149,9 @@ class DynamicTimeWarpingPane extends Component {
                 numberOfSeries={2}
                 focusSeries={focusSeries} />
             </Grid.Column>
-            <Grid.Column width={14} >
+            <Grid.Column width={13} >
               <div style={{ width: '100%', height: '100%' }} ref={this.drawerContainer}>
-                <DynamicTimeWarpingDrawer
+                <MultiSeriesDrawer
                   key={drawerKey}
                   width={drawerWidth}
                   height={drawerHeight}

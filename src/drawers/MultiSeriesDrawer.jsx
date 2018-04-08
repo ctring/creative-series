@@ -51,7 +51,6 @@ export default class DynamicTimeWarpingDrawer extends Component {
       onOffsetChange,
       series,
       rangeY,
-      focusSeries,      
     } = this.props;
 
     const {
@@ -62,6 +61,7 @@ export default class DynamicTimeWarpingDrawer extends Component {
     const space = series.map((s) => computeSpace(s, width));
     const computedRangeY = rangeY || getRangeFromMultipleSeries(...series);
     const screenY = series.map((s) => computeScreenY(s, rangeY, height));
+    const focusSeries = this.props.focusSeries || 0;
 
     if (e.evt && e.evt.buttons === 1) {
       const index = Math.floor((e.evt.layerX - PADDING + space[focusSeries] / 2)
@@ -89,7 +89,7 @@ export default class DynamicTimeWarpingDrawer extends Component {
     const {
       width, height,
       series,         // 2-D array
-      showOriginal,
+      showOriginal, showDTWMatches,
       rangeY,  
     } = this.props;
 
@@ -104,11 +104,14 @@ export default class DynamicTimeWarpingDrawer extends Component {
     const zeroOffset = screenOffset.map((so) => (Array(so.length).fill(0)));
     
     // Perform dynamic time warping rendering on series 0 and 1 only
-    const { matches } = dynamicTimeWarping(
-      series[0].map((s, i) => (s + (userOffset[0][i] || 0))), 
-      series[1].map((s, i) => (s + (userOffset[1][i] || 0))));
-    const screenData0 = packScreenData(screenX[0], screenY[0], screenOffset[0]);
-    const screenData1 = packScreenData(screenX[1], screenY[1], screenOffset[1]);
+    let matches, screenData0, screenData1;
+    if (showDTWMatches) {
+      matches = dynamicTimeWarping(
+        series[0].map((s, i) => (s + (userOffset[0][i] || 0))), 
+        series[1].map((s, i) => (s + (userOffset[1][i] || 0)))).matches;
+      screenData0 = packScreenData(screenX[0], screenY[0], screenOffset[0]);
+      screenData1 = packScreenData(screenX[1], screenY[1], screenOffset[1]);
+    }
 
     return (
       <Stage width={width} height={height}
@@ -127,9 +130,7 @@ export default class DynamicTimeWarpingDrawer extends Component {
           </Layer>
         }
         <Layer>
-          {
-            renderMatches(screenData0, screenData1, matches, 'blue')
-          }
+          {showDTWMatches && renderMatches(screenData0, screenData1, matches, 'blue')}
           {
             screenY.reduce((prev, screenYi, i) => {
               prev.push(renderLines(screenX[i], screenYi, screenOffset[i], 'red', 'new' + i));

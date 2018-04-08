@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Grid, Form, Message } from 'semantic-ui-react';
 import ReactResizeDetector from 'react-resize-detector';
 
-import SeriesDrawer from './drawers/SeriesDrawer';
+import MultiSeriesDrawer from './drawers/MultiSeriesDrawer';
 import CopiableTextOutput from './components/CopiableTextOutput';
 import GraphControls from './components/GraphControls';
 
@@ -74,7 +74,7 @@ class SingleSeriesPane extends Component {
   }
 
   onOffsetChange = (offset) => {
-    this.setState({ offset });
+    this.setState({ offset: offset[0] });
   }
 
   renderInputForm = () => {
@@ -108,7 +108,7 @@ class SingleSeriesPane extends Component {
       <div>
         <Grid celled>
           <Grid.Row centered columns={2}>
-            <Grid.Column width={2}>
+            <Grid.Column width={3}>
               <GraphControls
                 lowY={lowY}
                 highY={highY}
@@ -116,13 +116,13 @@ class SingleSeriesPane extends Component {
                 onChange={this.onChange}
                 onChangeCheckbox={this.onChangeCheckbox} />
             </Grid.Column>
-            <Grid.Column width={14} >
+            <Grid.Column width={13} >
               <div style={{ width: '100%', height: '100%' }} ref={this.drawerContainer}>
-                <SeriesDrawer
+                <MultiSeriesDrawer
                   key={drawerKey}
                   width={drawerWidth}
                   height={drawerHeight}
-                  series={currentSeries}
+                  series={[currentSeries]}
                   rangeY={[lowY, highY]}
                   showOriginal={showOriginal}
                   onOffsetChange={this.onOffsetChange} />
