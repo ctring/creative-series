@@ -33,7 +33,10 @@ class DynamicTimeWarpingPane extends Component {
       lowY: -1,
       highY: 1,
       showOriginal: true,
+
       showDTWMatches: false,
+      dtwReduceFunc: null,
+      dtwBandSize: 0,
     };
 
     this.drawerContainer = React.createRef();
@@ -104,7 +107,8 @@ class DynamicTimeWarpingPane extends Component {
       drawerKey, drawerWidth, drawerHeight,
       currentSeries1, currentSeries2, focusSeries,
       offset1, offset2,
-      lowY, highY, showOriginal, showDTWMatches, 
+      lowY, highY, showOriginal, showDTWMatches,
+      dtwBandSize, dtwReduceFunc,
       errorMessage,
     } = this.state;
 
@@ -120,7 +124,7 @@ class DynamicTimeWarpingPane extends Component {
       <div>
         <Grid celled>
           <Grid.Row centered columns={2}>
-            <Grid.Column width={3}>
+            <Grid.Column width={3} style={{height: '428px', overflow: 'auto'}}>
               <GraphControls
                 lowY={lowY}
                 highY={highY}
@@ -129,7 +133,9 @@ class DynamicTimeWarpingPane extends Component {
                 onChange={this.onChange}
                 onChangeCheckbox={this.onChangeCheckbox}
                 numberOfSeries={2}
-                focusSeries={focusSeries} />
+                focusSeries={focusSeries}
+                dtwBandSize={dtwBandSize}
+                dtwReduceFunc={dtwReduceFunc} />
             </Grid.Column>
             <Grid.Column width={13} >
               <div style={{ width: '100%', height: '100%' }} ref={this.drawerContainer}>
@@ -142,10 +148,10 @@ class DynamicTimeWarpingPane extends Component {
                   showOriginal={showOriginal}
                   showDTWMatches={showDTWMatches}
                   onOffsetChange={this.onOffsetChange}
+                  dtwBandSize={parseInt(dtwBandSize, 10)}
                   focusSeries={focusSeries} />
               </div>
             </Grid.Column>
-
           </Grid.Row>
           <Grid.Row columns={2}>
             <Grid.Column>

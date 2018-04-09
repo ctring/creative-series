@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form, Input } from 'semantic-ui-react';
+import { Form, Segment } from 'semantic-ui-react';
 
 export default function GraphControls(props) {
   const {
     lowY, highY, showOriginal, showDTWMatches,
     onChange, onChangeCheckbox,
     numberOfSeries, focusSeries,
+    dtwBandSize, dtwReduceFunc,
   } = props;
 
   const seriesOptions = Array.from(
@@ -17,25 +18,35 @@ export default function GraphControls(props) {
 
   return (
     <Form>
-      <Form.Field fluid type='number' control={Input} name='highY'
-        step={0.1}
-        value={highY}
-        onChange={onChange}
-        label='High Y' />
-      <Form.Field fluid type='number' control={Input} name='lowY'
-        step={0.1}
-        value={lowY}
-        onChange={onChange}
-        label='Low Y' />
-      <Form.Checkbox label='Show original' name='showOriginal'
-        checked={showOriginal} onChange={onChangeCheckbox} />
-      {numberOfSeries > 1 &&
-        <Form.Checkbox label='Show DTW matches' name='showDTWMatches'
-          checked={showDTWMatches} onChange={onChangeCheckbox} />}
       {numberOfSeries > 1 &&
         <Form.Select fluid label='Focus series' name='focusSeries'
           options={seriesOptions} value={parseInt(focusSeries, 10)}
           onChange={onChange} />}
+      <Form.Group widths='equal'>
+        <Form.Input fluid type='number' name='highY'
+          step={0.1}
+          value={highY}
+          onChange={onChange}
+          label='High Y' />
+        <Form.Input fluid type='number' name='lowY'
+          step={0.1}
+          value={lowY}
+          onChange={onChange}
+          label='Low Y' />
+      </Form.Group>
+      <Form.Checkbox toggle label='Show original' name='showOriginal'
+        checked={showOriginal} onChange={onChangeCheckbox} />
+
+      {numberOfSeries > 1 &&
+        <Segment>
+          <Form.Checkbox toggle label='Show DTW matches' name='showDTWMatches'
+            checked={showDTWMatches} onChange={onChangeCheckbox} />
+          <Form.Select fluid label='DTW variation' name='dtwReduceFunc'
+            onChange={onChange}/>
+          <Form.Input fluid type='number' label='Restricting band size' name='dtwBandSize'
+            step={1} min={0} value={dtwBandSize}
+            onChange={onChange}/>
+        </Segment>}
     </Form>
   )
 }

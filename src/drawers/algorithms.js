@@ -37,17 +37,21 @@ function fillArray(shape, value) {
   return Array.from({ length: shape[0] }, (v, i) => fillArray(shape.slice(1), value));
 }
 
-const euclideanReduce = (prev, x, y) => (prev + Math.pow((x - y), 2))
+const DTW_REDUCE_FUNC = {
+  'euclidean': (prev, x, y) => (prev + Math.pow((x - y), 2)),
+  'manhattan': (prev, x, y) => (prev + Math.abs(x - y)),
+  'minkowsky': (prev, x, y) => (Math.min(prev, Math.abs(x - y))),
+}
 
-function dynamicTimeWarping(a, b, reduceFunc = euclideanReduce) {
-  console.log(a);
+function dynamicTimeWarpingMatches(
+  a, b,
+  reduceFunc = DTW_REDUCE_FUNC['euclidean'],
+  bandSize = Infinity) {
+
   const m = a.length;
   const n = b.length;
   if (m === 0 || n === 0) {
-    return {
-      distance: 0,
-      matches: [],
-    }
+    return [];
   }
 
   let f = fillArray([m, n], 0);
@@ -67,6 +71,10 @@ function dynamicTimeWarping(a, b, reduceFunc = euclideanReduce) {
 
   for (let i = 1; i < m; i++) {
     for (let j = 1; j < n; j++) {
+      if (j < i - bandSize || j > i + bandSize) {
+        f[i][j] = Infinity;
+        continue
+      }
       if (f[i - 1][j] < f[i][j - 1] && f[i - 1][j] < f[i - 1][j - 1]) {
         f[i][j] = f[i - 1][j];
         trace[i][j] = [i - 1, j];
@@ -93,10 +101,7 @@ function dynamicTimeWarping(a, b, reduceFunc = euclideanReduce) {
     j = tr[1];
   }
 
-  return {
-    distance: Math.sqrt(f[m - 1][n - 1]),
-    matches
-  };
+  return matches;
 }
 
 export {
@@ -105,5 +110,5 @@ export {
   scaleAndTranslate,
   getRangeFromSeries,
   getRangeFromMultipleSeries,
-  dynamicTimeWarping,
+  dynamicTimeWarpingMatches,
 };

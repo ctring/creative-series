@@ -5,7 +5,7 @@ import { Stage, Layer } from 'react-konva';
 import {
   scale,
   getRangeFromMultipleSeries,
-  dynamicTimeWarping,
+  dynamicTimeWarpingMatches,
 } from './algorithms';
 
 import {
@@ -25,6 +25,7 @@ export default class DynamicTimeWarpingDrawer extends Component {
     screenOffset: [], // 2-D array
   };
 
+  // Rescale screen offset when new rangeY comes in
   static getDerivedStateFromProps(nextProps, prevState) {
     const { height, series, rangeY } = nextProps;
     const computedRangeY = rangeY || getRangeFromMultipleSeries(...series);
@@ -37,7 +38,6 @@ export default class DynamicTimeWarpingDrawer extends Component {
         computedRangeY[0], computedRangeY[1], height, 0))
     ));
 
-    // Update offset when new rangeY comes in
     return {
       screenOffset: newScreenOffset,
       userOffset: newUserOffset,
@@ -89,8 +89,10 @@ export default class DynamicTimeWarpingDrawer extends Component {
     const {
       width, height,
       series,         // 2-D array
-      rangeY,      
-      showOriginal, showDTWMatches,
+      rangeY,
+      showOriginal,
+      showDTWMatches,
+      dtwReduceFunc, dtwBandSize,
     } = this.props;
 
     const {
@@ -102,22 +104,25 @@ export default class DynamicTimeWarpingDrawer extends Component {
     const screenX = series.map((s, i) => computeScreenX(s, space[i]));
     const screenY = series.map((s) => computeScreenY(s, rangeY, height));
     const zeroOffset = screenOffset.map((so) => (Array(so.length).fill(0)));
-    
+
     // Perform dynamic time warping rendering on series 0 and 1 only
-    let matches, screenData0, screenData1;
+    let MatchesJSX;
     if (showDTWMatches) {
-      matches = dynamicTimeWarping(
-        series[0].map((s, i) => (s + (userOffset[0][i] || 0))), 
-        series[1].map((s, i) => (s + (userOffset[1][i] || 0)))).matches;
-      screenData0 = packScreenData(screenX[0], screenY[0], screenOffset[0]);
-      screenData1 = packScreenData(screenX[1], screenY[1], screenOffset[1]);
+      const matches = dynamicTimeWarpingMatches(
+        series[0].map((s, i) => (s + (userOffset[0][i] || 0))),
+        series[1].map((s, i) => (s + (userOffset[1][i] || 0))),
+        dtwReduceFunc,
+        dtwBandSize);
+      const screenData0 = packScreenData(screenX[0], screenY[0], screenOffset[0]);
+      const screenData1 = packScreenData(screenX[1], screenY[1], screenOffset[1]);
+      MatchesJSX = renderMatches(screenData0, screenData1, matches, 'blue');
     }
 
     return (
       <Stage width={width} height={height}
         onMouseMove={this.offsetUpdateFunc}
         onMouseDown={this.offsetUpdateFunc}
-        style={{cursor: 'crosshair'}}>
+        style={{ cursor: 'crosshair' }}>
         {showOriginal &&
           <Layer>
             {
@@ -126,11 +131,11 @@ export default class DynamicTimeWarpingDrawer extends Component {
                 prev.push(renderPoints(screenX[i], screenYi, zeroOffset[i], 'original' + i));
                 return prev;
               }, [])
-           }
+            }
           </Layer>
         }
         <Layer>
-          {showDTWMatches && renderMatches(screenData0, screenData1, matches, 'blue')}
+          {MatchesJSX}
           {
             screenY.reduce((prev, screenYi, i) => {
               prev.push(renderLines(screenX[i], screenYi, screenOffset[i], 'red', 'new' + i));
@@ -145,15 +150,21 @@ export default class DynamicTimeWarpingDrawer extends Component {
 }
 
 DynamicTimeWarpingDrawer.propTypes = {
+  // Basic properties
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
-  
   series: PropTypes.array.isRequired,
   rangeY: PropTypes.array,
-  
+
+  // Callback functions
   onOffsetChange: PropTypes.func,
-  
+
+  // Display options
   showOriginal: PropTypes.bool,
-  showDTWMatches: PropTypes.bool,
   focusSeries: PropTypes.number,
+
+  // DTW properties
+  showDTWMatches: PropTypes.bool,
+  dtwReduceFunc: PropTypes.func,
+  dtwBandSize: PropTypes.number,
 }
