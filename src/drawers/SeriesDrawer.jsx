@@ -16,16 +16,13 @@ import {
   PADDING
 } from './drawing';
 
+import { STYLES } from './styles';
+
 export default class SeriesDrawer extends Component {
   state = {
     userOffset: [],
     screenOffset: [],
   };
-
-  // Y range from user
-  userRangeY() {
-
-  }
 
   static getDerivedStateFromProps(nextProps, prevState) {
     const { height, series } = nextProps;
@@ -76,10 +73,10 @@ export default class SeriesDrawer extends Component {
         onMouseMove={offsetUpdateFunc}
         onMouseDown={offsetUpdateFunc}>
         <Layer>
-          {showOriginal && renderLines(screenX, screenY, zeroOffset, 'gray')}
-          {showOriginal && renderPoints(screenX, screenY, zeroOffset, 'original')}
-          {renderLines(screenX, screenY, screenOffset, 'red')}
-          {renderPoints(screenX, screenY, screenOffset, 'new')}
+          {showOriginal && renderLines(screenX, screenY, zeroOffset, 'original', STYLES.lineOriginal)}
+          {showOriginal && renderPoints(screenX, screenY, zeroOffset, 'original', STYLES.pointNormal)}
+          {renderLines(screenX, screenY, screenOffset, 'new', STYLES.lineNormal)}
+          {renderPoints(screenX, screenY, screenOffset, 'new', STYLES.pointNormal)}
         </Layer>
       </Stage>
     )

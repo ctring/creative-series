@@ -11,7 +11,7 @@ const DTW_VARIATION_OPTIONS = [
 export default function GraphControls(props) {
   const {
     lowY, highY, showOriginal, showDTWMatches,
-    onChange, onChangeCheckbox,
+    onChange, onChangeCheckbox, onSaveClicked,
     numberOfSeries, focusSeries,
     dtwBandSize, dtwReduceFunc,
   } = props;
@@ -53,6 +53,8 @@ export default function GraphControls(props) {
             step={1} min={0} value={parseInt(dtwBandSize, 10)}
             onChange={onChange} />
         </Segment>}
+
+      <Form.Button fluid content='Save graph' name='saveGraph' onClick={onSaveClicked}/>
     </Form>
   )
 }
@@ -83,4 +85,5 @@ GraphControls.propTypes = {
 
   onChange: PropTypes.func,
   onChangeCheckbox: PropTypes.func,
+  onSaveClicked: PropTypes.func,
 };

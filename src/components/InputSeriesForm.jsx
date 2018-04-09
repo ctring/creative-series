@@ -8,7 +8,6 @@ export default function InputSeriesForm (props) {
     onSeriesSubmit,
     onChange,
     errorMessage,
-    numberOfSeries,
     separator,
   } = props;
 
@@ -21,25 +20,18 @@ export default function InputSeriesForm (props) {
         placeholder='Use regular expression. Default is comma ( , ).'
         value={separator}
         onChange={onChange}/>
-      {
-        Array.from({length: numberOfSeries}, (v, i) => {
-          const index = numberOfSeries === 1 ? '' : (i + 1).toString();
-          return <Form.TextArea
-            label={'Input series ' + index}
-            name={'inputSeriesStr' + index}
-            placeholder='Enter a series of number separated by the above separator.'
-            autoHeight
-            onChange={onChange}
-            key={'input-' + i}/>
-        })
-      }
+      <Form.TextArea
+          label={'Input series'}
+          name={'inputSeriesStr'}
+          placeholder='Enter a series of number separated by the above separator. One series per line.'
+          autoHeight
+          onChange={onChange}/>
       <Form.Button content='Set series' />
     </Form>
   );
 }
 
 InputSeriesForm.propTypes = {
-  numberOfSeries: PropTypes.number.isRequired,
   onChange: PropTypes.func,
   onSeriesSubmit: PropTypes.func,
   errorMessage: PropTypes.string,

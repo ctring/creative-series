@@ -6,7 +6,7 @@ import MultiSeriesDrawer from './drawers/MultiSeriesDrawer';
 import InputSeriesForm from './components/InputSeriesForm';
 import CopiableTextOutput from './components/CopiableTextOutput';
 import GraphControls from './components/GraphControls';
-import { convertToSeriesFromString } from './utils'
+import { convertToSeriesFromString, downloadURI } from './utils'
 
 const initialSeries = Array(10).fill(0);
 
@@ -26,8 +26,7 @@ class DynamicTimeWarpingPane extends Component {
       drawerWidth: 1000,
       drawerHeight: 400,
 
-      inputSeriesStr1: '',
-      inputSeriesStr2: '',
+      inputSeriesStr: '',
       separator: '',
       errorMessage: '',
 
@@ -41,6 +40,7 @@ class DynamicTimeWarpingPane extends Component {
     };
 
     this.drawerContainer = React.createRef();
+    this.stageRef = React.createRef();
   }
 
   onChange = (e, { name, value }) => {
@@ -61,15 +61,16 @@ class DynamicTimeWarpingPane extends Component {
   }
 
   onSeriesSubmit = () => {
-    const { inputSeriesStr1, inputSeriesStr2, drawerKey, separator } = this.state;
+    const { inputSeriesStr, drawerKey, separator } = this.state;
+    const inputSeriesArr = inputSeriesStr.trim().split(/\n+/);
     const reSep = new RegExp(separator || ',');
-    const inputSeries1 = inputSeriesStr1 ?
-      convertToSeriesFromString(inputSeriesStr1, reSep) :
+    const inputSeries1 = inputSeriesArr[0] ?
+      convertToSeriesFromString(inputSeriesArr[0], reSep) :
       initialSeries;
-    const inputSeries2 = inputSeriesStr2 ?
-      convertToSeriesFromString(inputSeriesStr2, reSep) :
+    const inputSeries2 = inputSeriesArr[1] ?
+      convertToSeriesFromString(inputSeriesArr[1], reSep) :
       initialSeries;
-    console.log(inputSeries1);
+
     if (inputSeries1.findIndex(isNaN) !== -1) {
       this.setState({
         errorMessage: 'Series 1 must only contain numeric values'
@@ -105,6 +106,11 @@ class DynamicTimeWarpingPane extends Component {
     this.setState({ offset1: offset[0], offset2: offset[1] });
   }
 
+  onSaveClicked = () => {
+    const stage = this.stageRef.current.getStage();
+    downloadURI(stage.toDataURL(), 'graph.png');
+  }
+
   render() {
     const {
       drawerKey, drawerWidth, drawerHeight,
@@ -135,9 +141,10 @@ class DynamicTimeWarpingPane extends Component {
                 showDTWMatches={showDTWMatches}
                 onChange={this.onChange}
                 onChangeCheckbox={this.onChangeCheckbox}
-                numberOfSeries={2}
+                onSaveClicked={this.onSaveClicked}
                 focusSeries={focusSeries}
                 dtwBandSize={dtwBandSize}
+                numberOfSeries={2}
                 dtwReduceFunc={dtwReduceFunc} />
             </Grid.Column>
             <Grid.Column width={13} >
@@ -146,6 +153,7 @@ class DynamicTimeWarpingPane extends Component {
                   key={drawerKey}
                   width={drawerWidth}
                   height={drawerHeight}
+                  stageRef={this.stageRef}
                   series={[currentSeries1, currentSeries2]}
                   rangeY={[lowY, highY]}
                   showOriginal={showOriginal}
@@ -159,7 +167,7 @@ class DynamicTimeWarpingPane extends Component {
           </Grid.Row>
           <Grid.Row columns={2}>
             <Grid.Column>
-              <InputSeriesForm numberOfSeries={2}
+              <InputSeriesForm
                 errorMessage={errorMessage}
                 onChange={this.onChange}
                 onSeriesSubmit={this.onSeriesSubmit}

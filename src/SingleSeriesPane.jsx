@@ -23,6 +23,7 @@ class SingleSeriesPane extends Component {
 
       inputSeriesStr: '',
       errorMessage: '',
+      separator: '',
 
       lowY: -1,
       highY: 1,
@@ -50,9 +51,11 @@ class SingleSeriesPane extends Component {
   }
 
   onSeriesSubmit = () => {
-    const { inputSeriesStr, drawerKey } = this.state;
+    const { inputSeriesStr, drawerKey, separator } = this.state;
+    const reSep = new RegExp(separator || ',');
+
     let inputSeries = inputSeriesStr ?
-      inputSeriesStr.split(',').map((x) => (parseFloat(x, 10))) :
+      inputSeriesStr.trim().split(reSep).map((x) => (parseFloat(x, 10))) :
       initialSeries;
     if (inputSeries.findIndex(isNaN) !== -1) {
       this.setState({
@@ -83,7 +86,7 @@ class SingleSeriesPane extends Component {
       drawerKey, drawerWidth, drawerHeight,
       currentSeries, offset,
       lowY, highY, showOriginal,
-      errorMessage,
+      errorMessage, separator,
     } = this.state;
 
     const outputSeries = currentSeries.map(
@@ -122,6 +125,7 @@ class SingleSeriesPane extends Component {
                 errorMessage={errorMessage}
                 onChange={this.onChange}
                 onSeriesSubmit={this.onSeriesSubmit}
+                separator={separator}
               />
             </Grid.Column>
             <Grid.Column>

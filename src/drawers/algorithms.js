@@ -40,7 +40,7 @@ function fillArray(shape, value) {
 const DTW_REDUCE_FUNC = {
   'euclidean': (prev, x, y) => (prev + Math.pow((x - y), 2)),
   'manhattan': (prev, x, y) => (prev + Math.abs(x - y)),
-  'minkowski': (prev, x, y) => (Math.min(prev, Math.abs(x - y))),
+  'minkowski': (prev, x, y) => (Math.max(prev, Math.abs(x - y))),
 }
 
 function dynamicTimeWarpingMatches(

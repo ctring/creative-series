@@ -33,16 +33,16 @@ function computeScreenX(series, space) {
  * @param {array} screenX screen X-coordinates of the points
  * @param {array} screenY screen Y-coordinates of the points
  * @param {array} screenOffset offsets of the screen Y-coordinates
- * @param {string} stroke stroke color props of konva Line component
  * @param {string} key key for the line
+ * @param {object} style style for the line
  */
-function renderLines(screenX, screenY, screenOffset, stroke, key) {
+function renderLines(screenX, screenY, screenOffset, key, style) {
   let points = [];
   screenY.forEach((y, i) => {
     points.push(screenX[i]);
     points.push(y + (screenOffset[i] || 0));
   });
-  return <Line points={points} stroke={stroke} key={key} />
+  return <Line points={points} key={key} {...style} />
 }
 
 /**
@@ -51,15 +51,16 @@ function renderLines(screenX, screenY, screenOffset, stroke, key) {
  * @param {array} screenY screen Y-coordinates of the points
  * @param {array} screenOffset offsets of the screen Y-coordinates
  * @param {string} key prefix of key for the set of points
+ * @param {object} style style for the points
  */
-function renderPoints(screenX, screenY, screenOffset, key) {
+function renderPoints(screenX, screenY, screenOffset, key, style) {
   return screenY.map((y, i) => (
     <Circle
       x={screenX[i]}
       y={y + (screenOffset[i] || 0)}
       radius={POINT_RADIUS}
-      fill='black'
       key={key + i.toString()}
+      {...style}
     />))
 }
 
@@ -74,7 +75,7 @@ function packScreenData(screenX, screenY, screenOffset) {
  * @param {array} matches array of pairs of point indices being matched
  * @param {string} stroke stroke color props of konva Line component
  */
-function renderMatches(screenData0, screenData1, matches, stroke) {
+function renderMatches(screenData0, screenData1, matches, style) {
   const {
     screenX: screenX0,
     screenY: screenY0,
@@ -93,7 +94,7 @@ function renderMatches(screenData0, screenData1, matches, stroke) {
     const x1 = screenX1[m1];
     const y1 = screenY1[m1] + (screenOffset1[m1] || 0);
     const points = [x0, y0, x1, y1];
-    return <Line points={points} stroke={stroke} key={'match-' + i} />
+    return <Line points={points} key={'match-' + i} {...style} />
   })
 }
 

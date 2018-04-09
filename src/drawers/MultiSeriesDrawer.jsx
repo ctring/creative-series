@@ -19,6 +19,8 @@ import {
   PADDING,
 } from './drawing';
 
+import { STYLES } from './styles';
+
 export default class DynamicTimeWarpingDrawer extends Component {
   state = {
     userOffset: [],   // 2-D array
@@ -52,6 +54,7 @@ export default class DynamicTimeWarpingDrawer extends Component {
       series,
       rangeY,
     } = this.props;
+    const focusSeries = this.props.focusSeries || 0;
 
     const {
       screenOffset,
@@ -61,7 +64,6 @@ export default class DynamicTimeWarpingDrawer extends Component {
     const space = series.map((s) => computeSpace(s, width));
     const computedRangeY = rangeY || getRangeFromMultipleSeries(...series);
     const screenY = series.map((s) => computeScreenY(s, rangeY, height));
-    const focusSeries = this.props.focusSeries || 0;
 
     if (e.evt && e.evt.buttons === 1) {
       const index = Math.floor((e.evt.layerX - PADDING + space[focusSeries] / 2)
@@ -88,12 +90,14 @@ export default class DynamicTimeWarpingDrawer extends Component {
   render() {
     const {
       width, height,
-      series,         // 2-D array
+      series, // 2-D array
       rangeY,
       showOriginal,
       showDTWMatches,
       dtwReduceFunc, dtwBandSize,
+      stageRef
     } = this.props;
+    const focusSeries = this.props.focusSeries || 0;
 
     const {
       screenOffset,
@@ -115,11 +119,11 @@ export default class DynamicTimeWarpingDrawer extends Component {
         dtwBandSize);
       const screenData0 = packScreenData(screenX[0], screenY[0], screenOffset[0]);
       const screenData1 = packScreenData(screenX[1], screenY[1], screenOffset[1]);
-      MatchesJSX = renderMatches(screenData0, screenData1, matches, 'blue');
+      MatchesJSX = renderMatches(screenData0, screenData1, matches, STYLES.matches);
     }
 
     return (
-      <Stage width={width} height={height}
+      <Stage width={width} height={height} ref={stageRef}
         onMouseMove={this.offsetUpdateFunc}
         onMouseDown={this.offsetUpdateFunc}
         style={{ cursor: 'crosshair' }}>
@@ -127,8 +131,10 @@ export default class DynamicTimeWarpingDrawer extends Component {
           <Layer>
             {
               screenY.reduce((prev, screenYi, i) => {
-                prev.push(renderLines(screenX[i], screenYi, zeroOffset[i], 'gray', 'original' + i));
-                prev.push(renderPoints(screenX[i], screenYi, zeroOffset[i], 'original' + i));
+                prev.push(renderLines(screenX[i], screenYi, zeroOffset[i], 'original' + i, 
+                  STYLES.lineOriginal));
+                prev.push(renderPoints(screenX[i], screenYi, zeroOffset[i], 'original' + i,
+                  STYLES.pointNormal));
                 return prev;
               }, [])
             }
@@ -138,8 +144,10 @@ export default class DynamicTimeWarpingDrawer extends Component {
           {MatchesJSX}
           {
             screenY.reduce((prev, screenYi, i) => {
-              prev.push(renderLines(screenX[i], screenYi, screenOffset[i], 'red', 'new' + i));
-              prev.push(renderPoints(screenX[i], screenYi, screenOffset[i], 'new' + i));
+              prev.push(renderLines(screenX[i], screenYi, screenOffset[i], 'new' + i,
+                i === focusSeries ? STYLES.lineFocused : STYLES.lineNormal));
+              prev.push(renderPoints(screenX[i], screenYi, screenOffset[i], 'new' + i,
+                i === focusSeries ? STYLES.pointFocused : STYLES.pointNormal));
               return prev;
             }, [])
           }
@@ -162,6 +170,7 @@ DynamicTimeWarpingDrawer.propTypes = {
   // Display options
   showOriginal: PropTypes.bool,
   focusSeries: PropTypes.number,
+  stageRef: PropTypes.object,
 
   // DTW properties
   showDTWMatches: PropTypes.bool,
