@@ -115,6 +115,7 @@ export default class DynamicTimeWarpingDrawer extends Component {
         dtwBandSize);
       const screenData0 = packScreenData(screenX[0], screenY[0], screenOffset[0]);
       const screenData1 = packScreenData(screenX[1], screenY[1], screenOffset[1]);
+      console.log(matches);
       MatchesJSX = renderMatches(screenData0, screenData1, matches, 'blue');
     }
 
@@ -165,6 +166,6 @@ DynamicTimeWarpingDrawer.propTypes = {
 
   // DTW properties
   showDTWMatches: PropTypes.bool,
-  dtwReduceFunc: PropTypes.func,
+  dtwReduceFunc: PropTypes.string,
   dtwBandSize: PropTypes.number,
 }

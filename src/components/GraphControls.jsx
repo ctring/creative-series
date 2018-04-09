@@ -2,6 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Form, Segment } from 'semantic-ui-react';
 
+const DTW_VARIATION_OPTIONS = [
+  { key: 'euclidean', text: 'Euclidean', value: 'euclidean' },
+  { key: 'manhattan', text: 'Manhattan', value: 'manhattan' },
+  { key: 'minkowski', text: 'Minkowski', value: 'minkowski' },
+];
+
 export default function GraphControls(props) {
   const {
     lowY, highY, showOriginal, showDTWMatches,
@@ -42,10 +48,10 @@ export default function GraphControls(props) {
           <Form.Checkbox toggle label='Show DTW matches' name='showDTWMatches'
             checked={showDTWMatches} onChange={onChangeCheckbox} />
           <Form.Select fluid label='DTW variation' name='dtwReduceFunc'
-            onChange={onChange}/>
+            options={DTW_VARIATION_OPTIONS} onChange={onChange} value={dtwReduceFunc} />
           <Form.Input fluid type='number' label='Restricting band size' name='dtwBandSize'
-            step={1} min={0} value={dtwBandSize}
-            onChange={onChange}/>
+            step={1} min={0} value={parseInt(dtwBandSize, 10)}
+            onChange={onChange} />
         </Segment>}
     </Form>
   )
@@ -61,9 +67,20 @@ GraphControls.propTypes = {
     PropTypes.number
   ]),
   numberOfSeries: PropTypes.number,
-  focusSeries: PropTypes.number,
+  focusSeries: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number
+  ]),
+
   showOriginal: PropTypes.bool,
   showDTWMatches: PropTypes.bool,
+
+  dtwBandSize: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number
+  ]),
+  dtwReduceFunc: PropTypes.string,
+
   onChange: PropTypes.func,
   onChangeCheckbox: PropTypes.func,
 };

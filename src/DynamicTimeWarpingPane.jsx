@@ -35,8 +35,8 @@ class DynamicTimeWarpingPane extends Component {
       showOriginal: true,
 
       showDTWMatches: false,
-      dtwReduceFunc: null,
-      dtwBandSize: 0,
+      dtwReduceFunc: 'euclidean',
+      dtwBandSize: initialSeries.length,
     };
 
     this.drawerContainer = React.createRef();
@@ -94,6 +94,7 @@ class DynamicTimeWarpingPane extends Component {
       highY: max + padding,
       offset1: [],
       offset2: [],
+      dtwBandSize: Math.max(inputSeries1.length, inputSeries2.length),
     });
 
   }
@@ -149,6 +150,7 @@ class DynamicTimeWarpingPane extends Component {
                   showDTWMatches={showDTWMatches}
                   onOffsetChange={this.onOffsetChange}
                   dtwBandSize={parseInt(dtwBandSize, 10)}
+                  dtwReduceFunc={dtwReduceFunc}
                   focusSeries={focusSeries} />
               </div>
             </Grid.Column>
