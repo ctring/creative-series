@@ -28,6 +28,7 @@ class DynamicTimeWarpingPane extends Component {
 
       inputSeriesStr1: '',
       inputSeriesStr2: '',
+      separator: '',
       errorMessage: '',
 
       lowY: -1,
@@ -60,14 +61,15 @@ class DynamicTimeWarpingPane extends Component {
   }
 
   onSeriesSubmit = () => {
-    const { inputSeriesStr1, inputSeriesStr2, drawerKey } = this.state;
+    const { inputSeriesStr1, inputSeriesStr2, drawerKey, separator } = this.state;
+    const reSep = new RegExp(separator || ',');
     const inputSeries1 = inputSeriesStr1 ?
-      convertToSeriesFromString(inputSeriesStr1, ',') :
+      convertToSeriesFromString(inputSeriesStr1, reSep) :
       initialSeries;
     const inputSeries2 = inputSeriesStr2 ?
-      convertToSeriesFromString(inputSeriesStr2, ',') :
+      convertToSeriesFromString(inputSeriesStr2, reSep) :
       initialSeries;
-
+    console.log(inputSeries1);
     if (inputSeries1.findIndex(isNaN) !== -1) {
       this.setState({
         errorMessage: 'Series 1 must only contain numeric values'
@@ -110,7 +112,7 @@ class DynamicTimeWarpingPane extends Component {
       offset1, offset2,
       lowY, highY, showOriginal, showDTWMatches,
       dtwBandSize, dtwReduceFunc,
-      errorMessage,
+      errorMessage, separator,
     } = this.state;
 
     const outputSeries1 = currentSeries1.map(
@@ -161,6 +163,7 @@ class DynamicTimeWarpingPane extends Component {
                 errorMessage={errorMessage}
                 onChange={this.onChange}
                 onSeriesSubmit={this.onSeriesSubmit}
+                separator={separator}
               />
             </Grid.Column>
             <Grid.Column>
